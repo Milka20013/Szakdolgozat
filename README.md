@@ -1,0 +1,2 @@
+# Szakdolgozat2D
+ Szakdolgozat
