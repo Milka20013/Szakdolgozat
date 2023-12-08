@@ -48,7 +48,7 @@ namespace WFC
         }
         public void HardRestart()
         {
-            currentIterations = 0;
+            //currentIterations = 0;
             Clear();
             RunAlgorithm();
         }
@@ -220,7 +220,6 @@ namespace WFC
                 Restart();
                 return null;
             }
-            Debug.Log(cellVariable.sprite.name);
 
             if (x > 0)
             {
