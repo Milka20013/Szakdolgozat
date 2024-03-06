@@ -1,6 +1,8 @@
 using CoreGame;
 using System.Collections;
+using System.IO;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +29,8 @@ namespace WFC
         private float scale;
 
         private ImageCell[,] cells;
+
+        public TextMeshProUGUI text;
         private void Awake()
         {
             scale = imagePrefab.GetComponent<RectTransform>().rect.width;
@@ -238,6 +242,37 @@ namespace WFC
                 cells[x, y + 1].SetNeighbour(Side.UP, cellVariable);
             }
             return cellVariable;
+        }
+
+        public void ExportImage()
+        {
+            int xDimension = dimension.x * cells[0, 0].image.sprite.texture.width;
+            int yDimension = dimension.y * cells[0, 0].image.sprite.texture.height;
+            int width = cells[0, 0].image.sprite.texture.width;
+            int height = cells[0, 0].image.sprite.texture.height;
+
+            Texture2D targetTexture = new(xDimension, yDimension);
+            targetTexture.filterMode = FilterMode.Point;
+            for (int i = 0; i < dimension.x; i++)
+            {
+                for (int j = 0; j < dimension.y; j++)
+                {
+                    var pixels = cells[i, j].image.sprite.texture.GetPixels();
+                    targetTexture.SetPixels(width * i, height * j, width, height, pixels);
+                }
+            }
+            targetTexture.Apply();
+            var bytes = ImageConversion.EncodeToPNG(targetTexture);
+            File.WriteAllBytes(Path.Combine(Application.streamingAssetsPath, "imageOutput.png"), bytes);
+            text.text = "ready";
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                ExportImage();
+            }
         }
     }
 }

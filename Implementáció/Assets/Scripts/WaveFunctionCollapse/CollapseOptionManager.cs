@@ -7,18 +7,15 @@ namespace WFC
 {
     public class CollapseOptionManager : MonoBehaviour
     {
-        public static CollapseOptionManager instance;
+        public static CollapseOptionManager Instance { get; private set; }
         public CellVariable[] cellVariables;
         public bool autoRead;
 
         private void Awake()
         {
-            instance = this;
-            if (autoRead)
-            {
-                cellVariables = Resources.LoadAll<CellVariable>("CellVariables");
-            }
+            Instance = this;
         }
+
         public float Entropy(Dictionary<Side, CellVariable> neighbours)
         {
             var options = GetPossibleCellVariables(neighbours);

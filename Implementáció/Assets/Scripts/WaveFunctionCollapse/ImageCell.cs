@@ -16,7 +16,7 @@ namespace WFC
         }
         public CellVariable CollapseCell()
         {
-            var cellVariable = CollapseOptionManager.instance.GetRandomCellVariable(collapseData.neighbours);
+            var cellVariable = CollapseOptionManager.Instance.GetRandomCellVariable(collapseData.neighbours);
             if (cellVariable == null)
             {
                 return null;

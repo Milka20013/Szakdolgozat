@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace WFC
 {
@@ -54,12 +55,14 @@ namespace WFC
         public string spritePath = "Assets/Resources/";
         public bool cellCanNeighbourItself;
         public bool blockIsGrid;
+        public Image image;
         private int numberOfBlocksPerLine;
         private int numberOfBlocksPerColoumn;
         private List<PositionedBlock> positionedBlocks = new();
         private List<PositionedCellVariable> positionedCellVariables = new();
 
-        public void CreateCells()
+#if UNITY_EDITOR
+        /*public void CreateCells()
         {
             positionedBlocks = new();
             positionedCellVariables = new();
@@ -80,7 +83,7 @@ namespace WFC
                 var img = ImageConversion.EncodeToPNG(positionedBlocks[i].block);
                 File.WriteAllBytes(spritePath + "kep" + i + ".png", img);
                 AssetDatabase.ImportAsset(spritePath + "kep" + i + ".png");
-                var cellV = ScriptableObject.CreateInstance<CellVariable>();
+                var cellV = ScriptableObject.CreateInstance<CellVariableSO>();
                 cellV.weight = positionedBlocks[i].occurence;
                 positionedCellVariables.Add(new(cellV, positionedBlocks[i].positions));
                 AssetDatabase.CreateAsset(cellV, cellVariablesPath + i + ".asset");
@@ -95,8 +98,72 @@ namespace WFC
                     SetCellAsAnyNeighbour(positionedCellVariables[i], positionedCellVariables[i]);
                 }
             }
+        }*/
+#endif
+
+        private void Awake()
+        {
+            ReadImagesFromFolder();
         }
 
+        private void ReadImagesFromFolder()
+        {
+            string[] fileNames = Directory.GetFiles(Application.streamingAssetsPath, "*.png").ToArray();
+            List<Texture2D> textures = new();
+            foreach (var fileName in fileNames)
+            {
+                if (ConvertImageToTextureFromFile(fileName, out Texture2D texture))
+                {
+                    texture.filterMode = FilterMode.Point;
+                    textures.Add(texture);
+                    continue;
+                }
+                Debug.LogError("Couldn't load " + fileName + " to texture");
+            }
+            image.sprite = Sprite.Create(textures[0], new Rect(0f, 0f, textures[0].width, textures[0].height), new(0.5f, 0.5f));
+            referenceTexture = textures[0];
+
+            positionedBlocks = new();
+            positionedCellVariables = new();
+            if (blockIsGrid)
+            {
+                BlockAsGridImageConversion();
+                numberOfBlocksPerLine = referenceTexture.height / blockDimensions.y;
+                numberOfBlocksPerColoumn = referenceTexture.width / blockDimensions.x;
+            }
+            else
+            {
+                BlockAsAnyPositionImageConversion();
+                numberOfBlocksPerLine = referenceTexture.height - blockDimensions.y + 1;
+                numberOfBlocksPerColoumn = referenceTexture.width - blockDimensions.x + 1;
+            }
+            foreach (var pBlock in positionedBlocks)
+            {
+                var cellV = new CellVariable
+                {
+                    sprite = Sprite.Create(pBlock.block, new Rect(0, 0, pBlock.block.width, pBlock.block.height), new(0.5f, 0.5f)),
+                    weight = pBlock.occurence
+                };
+                positionedCellVariables.Add(new(cellV, pBlock.positions));
+            }
+            for (int i = 0; i < positionedBlocks.Count; i++)
+            {
+                SetNeighbours(positionedCellVariables[i], GetNeighboursPosition(positionedBlocks[i]));
+                if (cellCanNeighbourItself)
+                {
+                    SetCellAsAnyNeighbour(positionedCellVariables[i], positionedCellVariables[i]);
+                }
+            }
+
+            CollapseOptionManager.Instance.cellVariables = positionedCellVariables.Select(x => x.cellVariable).ToArray();
+        }
+
+        private bool ConvertImageToTextureFromFile(string filename, out Texture2D texture)
+        {
+            var bytes = File.ReadAllBytes(filename);
+            texture = new(1, 1);
+            return ImageConversion.LoadImage(texture, bytes);
+        }
         private void BlockAsGridImageConversion()
         {
             if (referenceTexture.width % blockDimensions.x != 0)
@@ -153,7 +220,7 @@ namespace WFC
 
         public void UpdateReferences()
         {
-            var cells = Resources.LoadAll<CellVariable>("CellVariables");
+            var cells = Resources.LoadAll<CellVariableSO>("CellVariables");
             var sprites = Resources.LoadAll<Sprite>("");
             for (int i = 0; i < cells.Length; i++)
             {

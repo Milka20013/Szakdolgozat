@@ -17,7 +17,7 @@ namespace WFC
             {
                 return float.PositiveInfinity;
             }
-            return CollapseOptionManager.instance.Entropy(neighbours);
+            return CollapseOptionManager.Instance.Entropy(neighbours);
         }
         public void SetNeighbour(Side side, CellVariable cellVariable)
         {

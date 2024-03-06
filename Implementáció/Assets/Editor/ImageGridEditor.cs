@@ -2,20 +2,20 @@ using UnityEditor;
 using UnityEngine;
 using WFC;
 
-[CustomEditor(typeof(InputReader))]
-public class InputReaderEditor : Editor
+[CustomEditor(typeof(ImageGrid))]
+public class ImageGridEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-        var inputReader = (InputReader)target;
+        var imageGrid = (ImageGrid)target;
         /*if (GUILayout.Button("Create Cells"))
         {
             inputReader.CreateCells();
         }*/
-        if (GUILayout.Button("Update References"))
+        if (GUILayout.Button("Export image"))
         {
-            inputReader.UpdateReferences();
+            imageGrid.ExportImage();
         }
     }
 }

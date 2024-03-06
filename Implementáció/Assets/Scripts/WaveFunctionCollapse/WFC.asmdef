@@ -2,7 +2,8 @@
     "name": "WFC",
     "rootNamespace": "WFC",
     "references": [
-        "GUID:589cac682005c4745aa1b0691b8c27f0"
+        "GUID:589cac682005c4745aa1b0691b8c27f0",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

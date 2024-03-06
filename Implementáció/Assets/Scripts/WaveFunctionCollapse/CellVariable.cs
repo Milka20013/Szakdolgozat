@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace WFC
 {
-    [CreateAssetMenu(menuName = "CellVariable")]
-    public class CellVariable : ScriptableObject, IWeighted
+    public class CellVariable : IWeighted
     {
         public Sprite sprite;
         public float weight;
