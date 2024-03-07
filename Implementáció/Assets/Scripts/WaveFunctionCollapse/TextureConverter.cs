@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,9 +14,18 @@ namespace WFC
         private Texture2D referenceTexture;
         [SerializeField] Image image;
 
-        public Vector2Int blockDimensions;
-        public bool cellCanNeighbourItself;
-        public bool blockIsGrid;
+        public Vector2Int blockDimensions = new(1, 1);
+        public bool cellCanNeighborItself;
+        public bool continuousBlocks;
+
+        [Header("UI")]
+        [SerializeField] private TextMeshProUGUI imageSizeText;
+        [SerializeField] private TextMeshProUGUI blockCountText;
+        [SerializeField] private TextMeshProUGUI successText;
+        [SerializeField] private Button checkBlocksButton;
+        [SerializeField] private BlockContext blockContext;
+
+
         private int numberOfBlocksPerLine;
         private int numberOfBlocksPerColoumn;
         private List<PositionedBlock> positionedBlocks = new();
@@ -32,19 +42,100 @@ namespace WFC
             {
                 referenceTexture = image.sprite.texture;
             }
+            var width = referenceTexture.width;
+            var height = referenceTexture.height;
+
+            imageSizeText.text = width.ToString() + "x" + height.ToString();
+            blockDimensions = new(width, height);
+        }
+        public void SetCellNeighbor(bool value)
+        {
+            cellCanNeighborItself = value;
+        }
+        public void SetContinuousBlock(bool value)
+        {
+            continuousBlocks = value;
+            RefreshBlockCount();
+        }
+        public void SetWidth(string value)
+        {
+            if (int.TryParse(value, out int result))
+            {
+                if (result == 0 || result > referenceTexture.width)
+                {
+                    return;
+                }
+                blockDimensions.x = result;
+                RefreshBlockCount();
+            }
+        }
+        public void SetHeight(string value)
+        {
+            if (int.TryParse(value, out int result))
+            {
+                if (result == 0 || result > referenceTexture.height)
+                {
+                    return;
+                }
+                blockDimensions.y = result;
+                RefreshBlockCount();
+            }
         }
 
+        private void RefreshBlockCount()
+        {
+            bool wrong = false;
+
+            if (continuousBlocks)
+            {
+                if (referenceTexture.width % blockDimensions.x != 0)
+                {
+                    wrong = true;
+                }
+                if (referenceTexture.height % blockDimensions.y != 0)
+                {
+                    wrong = true;
+
+                }
+                numberOfBlocksPerLine = referenceTexture.height / blockDimensions.y;
+                numberOfBlocksPerColoumn = referenceTexture.width / blockDimensions.x;
+            }
+            else
+            {
+                numberOfBlocksPerLine = referenceTexture.height - blockDimensions.y + 1;
+                numberOfBlocksPerColoumn = referenceTexture.width - blockDimensions.x + 1;
+            }
+
+            blockCountText.text = (numberOfBlocksPerLine * numberOfBlocksPerColoumn).ToString();
+            if (wrong)
+            {
+                blockCountText.text = "NON INTEGER";
+            }
+        }
         public void Init()
         {
-            ConvertReferenceTextureToBlock();
+            try
+            {
+                ConvertReferenceTextureToBlock();
+                SetPositionedCellVariables();
+                successText.text = positionedBlocks.Count.ToString() + " block(s) generated";
+                checkBlocksButton.gameObject.SetActive(true);
+                if (positionedBlocks.Count >= 40)
+                {
+                    checkBlocksButton.interactable = false;
+                }
+            }
+            catch (Exception e)
+            {
+                successText.text = e.Message;
+            }
 
-            SetPositionedCellVariables();
         }
         private void ConvertReferenceTextureToBlock()
         {
             positionedBlocks = new();
             positionedCellVariables = new();
-            if (blockIsGrid)
+            if (continuousBlocks)
             {
                 BlockAsGridImageConversion();
                 numberOfBlocksPerLine = referenceTexture.height / blockDimensions.y;
@@ -73,7 +164,7 @@ namespace WFC
             for (int i = 0; i < positionedBlocks.Count; i++)
             {
                 SetNeighbours(positionedCellVariables[i], GetNeighboursPosition(positionedBlocks[i]));
-                if (cellCanNeighbourItself)
+                if (cellCanNeighborItself)
                 {
                     SetCellAsAnyNeighbour(positionedCellVariables[i], positionedCellVariables[i]);
                 }
@@ -84,13 +175,11 @@ namespace WFC
         {
             if (referenceTexture.width % blockDimensions.x != 0)
             {
-                Debug.LogError("Width is not divisible by dimension x");
-                return;
+                throw new Exception("Width is not divisible by dimension x");
             }
             if (referenceTexture.height % blockDimensions.y != 0)
             {
-                Debug.LogError("Height is not divisible by dimension y");
-                return;
+                throw new Exception("Height is not divisible by dimension y");
             }
             for (int i = 0; i < referenceTexture.width / blockDimensions.x; i++)
             {
@@ -246,6 +335,11 @@ namespace WFC
                 }
             }
             return false;
+        }
+
+        public void ShowBlockContext()
+        {
+            blockContext.Show(positionedCellVariables);
         }
     }
 }
