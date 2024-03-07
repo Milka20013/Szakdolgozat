@@ -20,6 +20,7 @@ namespace WFC
     {
         public Vector2Int dimension;
         public Image imagePrefab;
+        public string outputPath = "output";
         public Canvas canvas;
         public int maxIterations = 5;
         public PickModel pickModel;
@@ -263,7 +264,7 @@ namespace WFC
             }
             targetTexture.Apply();
             var bytes = ImageConversion.EncodeToPNG(targetTexture);
-            File.WriteAllBytes(Path.Combine(Application.streamingAssetsPath, "imageOutput.png"), bytes);
+            File.WriteAllBytes(Path.Combine(Path.Combine(Application.streamingAssetsPath, outputPath), "imageOutput.png"), bytes);
             text.text = "ready";
         }
 
