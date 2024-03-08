@@ -5,7 +5,6 @@ namespace WFC
 {
     public class ImageCell
     {
-
         public Image image;
         public CollapseData collapseData;
 
@@ -21,17 +20,22 @@ namespace WFC
             {
                 return null;
             }
-            image.sprite = cellVariable.sprite;
+            SetImage(cellVariable);
             collapseData.collapsed = true;
 
             return cellVariable;
+        }
+
+        protected virtual void SetImage(CellVariable cellVariable)
+        {
+            image.sprite = cellVariable.sprite;
         }
         public void SetNeighbour(Side side, CellVariable cellVariable)
         {
             collapseData.SetNeighbour(side, cellVariable);
         }
 
-        public void Reset(Sprite sprite)
+        public virtual void Reset(Sprite sprite)
         {
             image.sprite = sprite;
             collapseData = new();

@@ -9,7 +9,6 @@ namespace WFC
     {
         public static CollapseOptionManager Instance { get; private set; }
         public CellVariable[] cellVariables;
-        public bool autoRead;
 
         private void Awake()
         {

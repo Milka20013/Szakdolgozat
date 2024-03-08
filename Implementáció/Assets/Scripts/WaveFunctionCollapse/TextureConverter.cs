@@ -23,6 +23,9 @@ namespace WFC
         [SerializeField] private TextMeshProUGUI blockCountText;
         [SerializeField] private TextMeshProUGUI successText;
         [SerializeField] private Button checkBlocksButton;
+        [SerializeField] private GameObject nextButton;
+        [SerializeField] private GameObject algorithmParameters;
+        [SerializeField] private GameObject blockGenerationParameters;
         [SerializeField] private BlockContext blockContext;
 
 
@@ -124,12 +127,19 @@ namespace WFC
                 {
                     checkBlocksButton.interactable = false;
                 }
+                nextButton.SetActive(true);
+                CollapseOptionManager.Instance.cellVariables = positionedCellVariables.Select(x => x.cellVariable).ToArray();
             }
             catch (Exception e)
             {
                 successText.text = e.Message;
             }
 
+        }
+        public void NextParameters()
+        {
+            blockGenerationParameters.SetActive(false);
+            algorithmParameters.SetActive(true);
         }
         private void ConvertReferenceTextureToBlock()
         {

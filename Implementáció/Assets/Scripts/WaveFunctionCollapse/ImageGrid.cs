@@ -25,31 +25,99 @@ namespace WFC
         public int maxIterations = 5;
         public PickModel pickModel;
         public bool animate;
+        public bool cellMode;
         private int currentIterations = 0;
+
+        [Header("UI")]
+        [SerializeField] private TextMeshProUGUI imageSizeText;
 
         private float scale;
 
+
         private ImageCell[,] cells;
 
-        public TextMeshProUGUI text;
+        //public TextMeshProUGUI text;
         private void Awake()
         {
             scale = imagePrefab.GetComponent<RectTransform>().rect.width;
+            //Init();
+        }
+
+        public void SetCellMode(bool value)
+        {
+            cellMode = value;
+        }
+
+        public void SetAnimateMode(bool value)
+        {
+            animate = value;
+        }
+        public void SetWidth(string value)
+        {
+            if (int.TryParse(value, out int result))
+            {
+                if (result == 0)
+                {
+                    return;
+                }
+                dimension.x = result;
+                RefreshImageSize();
+            }
+        }
+        public void SetHeight(string value)
+        {
+            if (int.TryParse(value, out int result))
+            {
+                if (result == 0)
+                {
+                    return;
+                }
+                dimension.y = result;
+                RefreshImageSize();
+            }
+        }
+
+        private void RefreshImageSize()
+        {
+            imageSizeText.text = (scale * dimension.x).ToString() + "x" + (scale * dimension.y).ToString();
+        }
+        public void Init()
+        {
             cells = new ImageCell[dimension.x, dimension.y];
+            Image image = null;
+            if (!cellMode)
+            {
+                image = Instantiate(imagePrefab);
+                Texture2D texture = new(dimension.x, dimension.y);
+                texture.filterMode = FilterMode.Point;
+                Sprite sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new(0.5f, 0.5f));
+                image.sprite = sprite;
+                image.transform.SetParent(canvas.transform);
+                image.transform.position = transform.position;
+                image.transform.localScale = new(dimension.x, dimension.y);
+            }
+
             for (int x = 0; x < dimension.x; x++)
             {
                 for (int y = 0; y < dimension.y; y++)
                 {
-                    var image = Instantiate(imagePrefab);
-                    image.transform.SetParent(canvas.transform);
-                    image.transform.position = new Vector3(x * scale, y * scale) + transform.position;
-                    cells[x, y] = new(image.GetComponent<Image>());
+
+                    if (cellMode)
+                    {
+                        image = Instantiate(imagePrefab);
+                        image.transform.SetParent(canvas.transform);
+                        image.transform.position = new Vector3(x * scale, y * scale) + transform.position;
+                        cells[x, y] = new ImageCell(image.GetComponent<Image>());
+                        continue;
+                    }
+                    cells[x, y] = new VirtualImageCell(image.GetComponent<Image>(), new(x, y));
                 }
             }
+            RunAlgorithm();
         }
         private void Start()
         {
-            RunAlgorithm();
+            //RunAlgorithm();
         }
         public void HardRestart()
         {
@@ -265,7 +333,7 @@ namespace WFC
             targetTexture.Apply();
             var bytes = ImageConversion.EncodeToPNG(targetTexture);
             File.WriteAllBytes(Path.Combine(Path.Combine(Application.streamingAssetsPath, outputPath), "imageOutput.png"), bytes);
-            text.text = "ready";
+            //text.text = "ready";
         }
 
         private void Update()
@@ -273,6 +341,10 @@ namespace WFC
             if (Input.GetKeyDown(KeyCode.E))
             {
                 ExportImage();
+            }
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                cells[0, 0].image.sprite.texture.Apply();
             }
         }
     }
