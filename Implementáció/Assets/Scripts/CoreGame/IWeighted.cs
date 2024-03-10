@@ -1,4 +1,4 @@
-namespace CoreGame
+namespace ProjectCore
 {
     public interface IWeighted
     {

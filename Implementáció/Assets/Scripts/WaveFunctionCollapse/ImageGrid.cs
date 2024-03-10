@@ -1,4 +1,4 @@
-using CoreGame;
+using ProjectCore;
 using System.Collections;
 using System.IO;
 using System.Linq;
@@ -252,7 +252,7 @@ namespace WFC
                         yield break;
                     }
                     var equalEntropyCells = cells.Cast<ImageCell>().Select(x => x).Where(x => x.Entropy() == min);
-                    var cell = GameManager.RandomElement(equalEntropyCells);
+                    var cell = ProjectManager.RandomElement(equalEntropyCells);
                     int xIndex = 0;
                     int yIndex = 0;
                     for (int x = 0; x < dimension.x; x++)
@@ -288,14 +288,14 @@ namespace WFC
                 {
                     indexArray[x][y] = y;
                 }
-                GameManager.ShuffleArray(indexArray[x]);
+                ProjectManager.ShuffleArray(indexArray[x]);
             }
             int[] randomXIndices = new int[dimension.x];
             for (int i = 0; i < dimension.x; i++)
             {
                 randomXIndices[i] = i;
             }
-            GameManager.ShuffleArray(randomXIndices);
+            ProjectManager.ShuffleArray(randomXIndices);
             for (int x = 0; x < dimension.y; x++)
             {
                 for (int y = 0; y < dimension.x; y++)

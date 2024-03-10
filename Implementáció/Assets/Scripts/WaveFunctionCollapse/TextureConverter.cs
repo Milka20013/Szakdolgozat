@@ -1,4 +1,4 @@
-using CoreGame;
+using ProjectCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -284,10 +284,10 @@ namespace WFC
             Vector2Int[] positions = new Vector2Int[block.positions.Count * 4];
             for (int i = 0; i < block.positions.Count; i++)
             {
-                positions[4 * i + 0] = (new(GameManager.Mod(block.positions[i].x - 1, numberOfBlocksPerColoumn), block.positions[i].y));
-                positions[4 * i + 1] = (new(GameManager.Mod(block.positions[i].x + 1, numberOfBlocksPerColoumn), block.positions[i].y));
-                positions[4 * i + 2] = (new(block.positions[i].x, GameManager.Mod(block.positions[i].y - 1, numberOfBlocksPerLine)));
-                positions[4 * i + 3] = (new(block.positions[i].x, GameManager.Mod(block.positions[i].y + 1, numberOfBlocksPerLine)));
+                positions[4 * i + 0] = (new(ProjectManager.Mod(block.positions[i].x - 1, numberOfBlocksPerColoumn), block.positions[i].y));
+                positions[4 * i + 1] = (new(ProjectManager.Mod(block.positions[i].x + 1, numberOfBlocksPerColoumn), block.positions[i].y));
+                positions[4 * i + 2] = (new(block.positions[i].x, ProjectManager.Mod(block.positions[i].y - 1, numberOfBlocksPerLine)));
+                positions[4 * i + 3] = (new(block.positions[i].x, ProjectManager.Mod(block.positions[i].y + 1, numberOfBlocksPerLine)));
             }
 
             return positions;

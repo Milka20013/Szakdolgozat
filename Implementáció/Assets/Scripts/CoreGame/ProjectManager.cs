@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CoreGame
+namespace ProjectCore
 {
-    public static class GameManager
+    public static class ProjectManager
     {
         public static T RandomElement<T>(IEnumerable<T> collection, out int index)
         {

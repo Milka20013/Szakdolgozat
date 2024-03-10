@@ -1,4 +1,4 @@
-using CoreGame;
+using ProjectCore;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -44,7 +44,7 @@ namespace WFC
                     candidates.Add(options[i]);
                 }
             }
-            return GameManager.RandomElement(candidates);
+            return ProjectManager.RandomElement(candidates);
         }
     }
 }

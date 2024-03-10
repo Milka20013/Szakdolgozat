@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-namespace CoreGame
+namespace ProjectCore
 {
     public class Menu : MonoBehaviour
     {

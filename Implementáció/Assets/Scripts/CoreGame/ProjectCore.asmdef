@@ -1,6 +1,6 @@
 {
-    "name": "CoreGame",
-    "rootNamespace": "CoreGame",
+    "name": "ProjectCore",
+    "rootNamespace": "ProjectCore",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

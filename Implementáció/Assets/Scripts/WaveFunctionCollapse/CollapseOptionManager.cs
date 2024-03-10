@@ -1,4 +1,4 @@
-using CoreGame;
+using ProjectCore;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -45,7 +45,7 @@ namespace WFC
                 }
                 return null;
             }
-            return GameManager.RandomElementWeighted(options);
+            return ProjectManager.RandomElementWeighted(options);
         }
 
         public CellVariable GetRandomCellVariableByLocalWeights(Dictionary<Side, CellVariable> neighbours)
@@ -85,7 +85,7 @@ namespace WFC
                 }
                 weightedCandidatesMutable.Add(new(candidate.element, candidate.weight));
             }
-            return GameManager.RandomElementWeighted(weightedCandidatesMutable.Select(x => x.Item1), weightedCandidatesMutable.Select(x => x.Item2).ToList());
+            return ProjectManager.RandomElementWeighted(weightedCandidatesMutable.Select(x => x.Item1), weightedCandidatesMutable.Select(x => x.Item2).ToList());
         }
 
         public HashSet<CellVariable> GetPossibleCellVariables(Dictionary<Side, CellVariable> neighbours)

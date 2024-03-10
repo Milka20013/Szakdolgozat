@@ -1,4 +1,4 @@
-using CoreGame;
+using ProjectCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,7 +43,7 @@ namespace WFC
         public static CellVariable GetRandomCellVariableFromWeightedConnections(CellVariable c1)
         {
             var connections = Connections.Where(x => x.Has(c1));
-            var chosenConnection = GameManager.RandomElementWeighted(connections);
+            var chosenConnection = ProjectManager.RandomElementWeighted(connections);
             return chosenConnection.GetPair(c1);
         }
 
