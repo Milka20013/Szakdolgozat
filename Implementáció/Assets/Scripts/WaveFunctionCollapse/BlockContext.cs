@@ -20,6 +20,9 @@ namespace WFC
             }
             for (int i = 0; i < spawnedObjects.Count; i++)
             {
+                var cellContext = spawnedObjects[i].GetComponent<BlockContextCell>();
+                cellContext.blockContext = this;
+                cellContext.cellVariable = cellVariables[i].cellVariable;
                 spawnedObjects[i].GetComponentInChildren<Image>().sprite = cellVariables[i].cellVariable.sprite;
                 spawnedObjects[i].GetComponentInChildren<TextMeshProUGUI>().text = cellVariables[i].cellVariable.GetWeight().ToString();
             }
@@ -29,6 +32,21 @@ namespace WFC
         public void Close()
         {
             gameObject.SetActive(false);
+        }
+
+        public void ChangeWeight(string message, CellVariable cellVariable)
+        {
+            if (float.TryParse(message, out float result))
+            {
+                if (result >= 0f)
+                {
+                    cellVariable.weight = result;
+                }
+                else
+                {
+                    CollapseOptionManager.Instance.wildCard = cellVariable;
+                }
+            }
         }
     }
 }

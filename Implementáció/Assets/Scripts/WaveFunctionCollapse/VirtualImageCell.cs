@@ -20,6 +20,7 @@ namespace WFC
             var width = cellVariable.sprite.texture.width;
             var height = cellVariable.sprite.texture.height;
             var pixels = cellVariable.sprite.texture.GetPixels();
+            //Debug.Log($"W: {width}, H: {height}, X: {position.x}, Y:{position.y}");
             texture.SetPixels(position.x * width, position.y * height, width, height, pixels);
             //texture.Apply();
         }

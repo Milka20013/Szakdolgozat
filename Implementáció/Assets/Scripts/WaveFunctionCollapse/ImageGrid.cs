@@ -26,12 +26,13 @@ namespace WFC
         public PickModel pickModel;
         public bool animate;
         public bool cellMode;
+        public bool useLocalWeights;
         private int currentIterations = 0;
 
         [Header("UI")]
         [SerializeField] private TextMeshProUGUI imageSizeText;
 
-        private float scale;
+        private int scale;
 
 
         private ImageCell[,] cells;
@@ -39,7 +40,7 @@ namespace WFC
         //public TextMeshProUGUI text;
         private void Awake()
         {
-            scale = imagePrefab.GetComponent<RectTransform>().rect.width;
+            scale = (int)imagePrefab.GetComponent<RectTransform>().rect.width;
             //Init();
         }
 
@@ -51,6 +52,11 @@ namespace WFC
         public void SetAnimateMode(bool value)
         {
             animate = value;
+        }
+
+        public void SetLocalWeightMode(bool value)
+        {
+            useLocalWeights = value;
         }
         public void SetWidth(string value)
         {
@@ -84,36 +90,58 @@ namespace WFC
         public void Init()
         {
             cells = new ImageCell[dimension.x, dimension.y];
-            Image image = null;
-            if (!cellMode)
+            if (cellMode)
             {
-                image = Instantiate(imagePrefab);
-                Texture2D texture = new(dimension.x, dimension.y);
-                texture.filterMode = FilterMode.Point;
-                Sprite sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new(0.5f, 0.5f));
-                image.sprite = sprite;
-                image.transform.SetParent(canvas.transform);
-                image.transform.position = transform.position;
-                image.transform.localScale = new(dimension.x, dimension.y);
+                InitCellMode();
             }
+            else
+            {
+                InitNonCellMode();
+            }
+            RunAlgorithm();
+        }
+
+        private void InitCellMode()
+        {
+            for (int x = 0; x < dimension.x; x++)
+            {
+                for (int y = 0; y < dimension.y; y++)
+                {
+                    var image = Instantiate(imagePrefab);
+                    image.transform.SetParent(canvas.transform);
+                    image.transform.localScale = new(1, 1);
+                    image.transform.localPosition = new Vector3((x - (dimension.x) / 2 + 0.5f) * scale, (y - dimension.y / 2 + 0.5f) * scale);
+                    cells[x, y] = new ImageCell(image);
+                }
+            }
+        }
+
+        private void InitNonCellMode()
+        {
+            int blockWidth = CollapseOptionManager.Instance.cellVariables[0].sprite.texture.width;
+            int blockHeight = CollapseOptionManager.Instance.cellVariables[0].sprite.texture.height;
+            if (dimension.x % blockWidth != 0 || dimension.y % blockHeight != 0)
+            {
+                Debug.LogError("Block dimensions are not compatible");
+                return;
+            }
+            dimension = new(dimension.x / blockWidth, dimension.y / blockHeight);
+            var image = Instantiate(imagePrefab);
+            Texture2D texture = new(dimension.x * blockWidth, dimension.y * blockHeight);
+            texture.filterMode = FilterMode.Point;
+            Sprite sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new(0.5f, 0.5f));
+            image.sprite = sprite;
+            image.transform.SetParent(canvas.transform);
+            image.transform.localPosition = new(0, 0);
+            image.transform.localScale = new(dimension.x, dimension.y);
 
             for (int x = 0; x < dimension.x; x++)
             {
                 for (int y = 0; y < dimension.y; y++)
                 {
-
-                    if (cellMode)
-                    {
-                        image = Instantiate(imagePrefab);
-                        image.transform.SetParent(canvas.transform);
-                        image.transform.position = new Vector3(x * scale, y * scale) + transform.position;
-                        cells[x, y] = new ImageCell(image.GetComponent<Image>());
-                        continue;
-                    }
-                    cells[x, y] = new VirtualImageCell(image.GetComponent<Image>(), new(x, y));
+                    cells[x, y] = new VirtualImageCell(image, new(x, y));
                 }
             }
-            RunAlgorithm();
         }
         private void Start()
         {
@@ -285,7 +313,15 @@ namespace WFC
         }
         private CellVariable CollapseCell(int x, int y)
         {
-            CellVariable cellVariable = cells[x, y].CollapseCell();
+            CellVariable cellVariable;
+            if (!useLocalWeights)
+            {
+                cellVariable = cells[x, y].CollapseCell();
+            }
+            else
+            {
+                cellVariable = cells[x, y].CollapseCellWithLocalWeights();
+            }
 
             if (cellVariable == null)
             {

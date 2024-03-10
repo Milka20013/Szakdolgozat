@@ -32,6 +32,19 @@ namespace CoreGame
             }
             return default;
         }
+        public static T RandomElementWeighted<T>(IEnumerable<T> collection, IEnumerable<float> weights)
+        {
+            float number = Random.Range(0, weights.Sum());
+            for (int i = 0; i < collection.Count(); i++)
+            {
+                number -= weights.ElementAt(i);
+                if (number <= 0f)
+                {
+                    return collection.ElementAt(i);
+                }
+            }
+            return default;
+        }
         public static void ShuffleArray<T>(T[] array)
         {
             int n = array.Length;

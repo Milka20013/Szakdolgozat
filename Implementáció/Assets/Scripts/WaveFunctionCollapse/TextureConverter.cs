@@ -132,9 +132,9 @@ namespace WFC
             }
             catch (Exception e)
             {
+                Debug.LogError(e);
                 successText.text = e.Message;
             }
-
         }
         public void NextParameters()
         {
@@ -167,9 +167,14 @@ namespace WFC
                 var cellV = new CellVariable
                 {
                     sprite = Sprite.Create(pBlock.block, new Rect(0, 0, pBlock.block.width, pBlock.block.height), new(0.5f, 0.5f)),
-                    weight = pBlock.occurence
+                    weight = pBlock.occurence,
                 };
                 positionedCellVariables.Add(new(cellV, pBlock.positions));
+            }
+            //lazy to name in the previous
+            for (int i = 0; i < positionedCellVariables.Count; i++)
+            {
+                positionedCellVariables[i].cellVariable.name = i.ToString();
             }
             for (int i = 0; i < positionedBlocks.Count; i++)
             {
@@ -198,6 +203,10 @@ namespace WFC
                     var texture = ReadBlockFromReferenceTexture(new(i * blockDimensions.x, j * blockDimensions.y));
                     //if the block exists, then put the position into the block.
                     //if not, add the block to the list
+                    if (IsTransparentBlock(texture))
+                    {
+                        continue;
+                    }
                     if (!CheckIfBlockExists(texture, out var block))
                     {
                         positionedBlocks.Add(new(texture, new(i, j)));
@@ -220,6 +229,10 @@ namespace WFC
                     var texture = ReadBlockFromReferenceTexture(new(i, j));
                     //if the block exists, then put the position into the block.
                     //if not, add the block to the list
+                    if (IsTransparentBlock(texture))
+                    {
+                        continue;
+                    }
                     if (!CheckIfBlockExists(texture, out var block))
                     {
                         positionedBlocks.Add(new(texture, new(i, j)));
@@ -288,18 +301,14 @@ namespace WFC
             }
             for (int i = 0; i < positionedCellVariable.positions.Count; i++)
             {
-                directionalNeighbours[0].Add(positionedCellVariables
-                                                        .Where(x => HasPosition(x, neighboursPositions[0 + i * 4]))
-                                                        .Select(x => x.cellVariable).First());
-                directionalNeighbours[1].Add(positionedCellVariables
-                                                            .Where(x => HasPosition(x, neighboursPositions[1 + i * 4]))
-                                                            .Select(x => x.cellVariable).First());
-                directionalNeighbours[2].Add(positionedCellVariables
-                                                            .Where(x => HasPosition(x, neighboursPositions[2 + i * 4]))
-                                                            .Select(x => x.cellVariable).First());
-                directionalNeighbours[3].Add(positionedCellVariables
-                                                            .Where(x => HasPosition(x, neighboursPositions[3 + i * 4]))
-                                                            .Select(x => x.cellVariable).First());
+                for (int j = 0; j < 4; j++)
+                {
+                    var neighbor = positionedCellVariables
+                                                        .Where(x => HasPosition(x, neighboursPositions[j + i * 4]))
+                                                        .Select(x => x.cellVariable).FirstOrDefault();
+                    directionalNeighbours[j].Add(neighbor);
+                    LocalWeightConnection.CreateOrRegister(neighbor, positionedCellVariable.cellVariable);
+                }
             }
             positionedCellVariable.cellVariable.left = directionalNeighbours[0].ToList();
             positionedCellVariable.cellVariable.right = directionalNeighbours[1].ToList();
@@ -327,6 +336,11 @@ namespace WFC
 
         }
 
+        private bool IsTransparentBlock(Texture2D block)
+        {
+            var pixels = block.GetPixels();
+            return pixels.Where(x => x.a == 0f).Count() == pixels.Length;
+        }
         private bool PositionEquals(Vector2Int one, Vector2Int two)
         {
             if (one.x == two.x && one.y == two.y)

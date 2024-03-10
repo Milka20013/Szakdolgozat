@@ -25,6 +25,19 @@ namespace WFC
 
             return cellVariable;
         }
+        public CellVariable CollapseCellWithLocalWeights()
+        {
+
+            var cellVariable = CollapseOptionManager.Instance.GetRandomCellVariableByLocalWeights(collapseData.neighbours);
+            if (cellVariable == null)
+            {
+                return null;
+            }
+            SetImage(cellVariable);
+            collapseData.collapsed = true;
+
+            return cellVariable;
+        }
 
         protected virtual void SetImage(CellVariable cellVariable)
         {
