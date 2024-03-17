@@ -17,6 +17,16 @@ namespace WFC
             Instance = this;
         }
 
+        public void SetBias(string text)
+        {
+            if (float.TryParse(text, out float value))
+            {
+                if (value != 0)
+                {
+                    bias = value;
+                }
+            }
+        }
         public float Entropy(Dictionary<Side, CellVariable> neighbours)
         {
             var options = GetPossibleCellVariables(neighbours);

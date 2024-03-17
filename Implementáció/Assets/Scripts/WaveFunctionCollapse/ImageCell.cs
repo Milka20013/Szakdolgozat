@@ -50,7 +50,7 @@ namespace WFC
 
         public virtual void Reset(Sprite sprite)
         {
-            image.sprite = sprite;
+            //image.sprite = sprite;
             collapseData = new();
         }
         public float Entropy()

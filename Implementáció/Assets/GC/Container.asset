@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc195df194cc97843912feda277e37ee, type: 3}
+  m_Name: Container
+  m_EditorClassIdentifier: 
+  celestialBodies:
+  - {fileID: 11400000, guid: 37f5515fe6c83834aaf5eaf73f859eb8, type: 2}
+  - {fileID: 11400000, guid: 8fca560f8b1c9ba47af2b937c1adee1f, type: 2}
+  - {fileID: 11400000, guid: 306c441a6c0d52545bebfab2d4fabd26, type: 2}

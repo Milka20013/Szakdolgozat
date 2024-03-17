@@ -19,6 +19,7 @@ namespace WFC
         public bool continuousBlocks;
 
         [Header("UI")]
+        [SerializeField] private bool useUI;
         [SerializeField] private TextMeshProUGUI imageSizeText;
         [SerializeField] private TextMeshProUGUI blockCountText;
         [SerializeField] private TextMeshProUGUI successText;
@@ -45,10 +46,13 @@ namespace WFC
             {
                 referenceTexture = image.sprite.texture;
             }
-            var width = referenceTexture.width;
-            var height = referenceTexture.height;
+            var width = 1;
+            var height = 1;
 
-            imageSizeText.text = width.ToString() + "x" + height.ToString();
+            if (useUI)
+            {
+                imageSizeText.text = width.ToString() + "x" + height.ToString();
+            }
             blockDimensions = new(width, height);
         }
         public void SetCellNeighbor(bool value)
@@ -121,13 +125,17 @@ namespace WFC
             {
                 ConvertReferenceTextureToBlock();
                 SetPositionedCellVariables();
-                successText.text = positionedBlocks.Count.ToString() + " block(s) generated";
-                checkBlocksButton.gameObject.SetActive(true);
-                if (positionedBlocks.Count >= 40)
+                if (useUI)
                 {
-                    checkBlocksButton.interactable = false;
+                    successText.text = positionedBlocks.Count.ToString() + " block(s) generated";
+                    checkBlocksButton.gameObject.SetActive(true);
+                    if (positionedBlocks.Count >= 40)
+                    {
+                        checkBlocksButton.interactable = false;
+                    }
+                    nextButton.SetActive(true);
                 }
-                nextButton.SetActive(true);
+
                 CollapseOptionManager.Instance.cellVariables = positionedCellVariables.Select(x => x.cellVariable).ToArray();
             }
             catch (Exception e)

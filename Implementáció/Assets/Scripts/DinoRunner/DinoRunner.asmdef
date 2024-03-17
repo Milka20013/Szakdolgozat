@@ -1,0 +1,17 @@
+{
+    "name": "DinoRunner",
+    "rootNamespace": "",
+    "references": [
+        "GUID:589cac682005c4745aa1b0691b8c27f0",
+        "GUID:c1d5fb229221e434690639f97e5c6081"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

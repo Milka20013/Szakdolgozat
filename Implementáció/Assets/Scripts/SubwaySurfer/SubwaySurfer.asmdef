@@ -1,0 +1,16 @@
+{
+    "name": "SubwaySurfer",
+    "rootNamespace": "SubwaySurfer",
+    "references": [
+        "GUID:589cac682005c4745aa1b0691b8c27f0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

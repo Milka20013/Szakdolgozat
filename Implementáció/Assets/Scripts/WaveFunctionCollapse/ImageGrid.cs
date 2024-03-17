@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace WFC
@@ -28,6 +29,8 @@ namespace WFC
         public bool cellMode;
         public bool useLocalWeights;
         private int currentIterations = 0;
+
+        public UnityEvent onAlgorithmEnd;
 
         [Header("UI")]
         [SerializeField] private TextMeshProUGUI imageSizeText;
@@ -57,6 +60,11 @@ namespace WFC
         public void SetLocalWeightMode(bool value)
         {
             useLocalWeights = value;
+        }
+
+        public void SetPickModel(int model)
+        {
+            pickModel = (PickModel)model;
         }
         public void SetWidth(string value)
         {
@@ -142,6 +150,13 @@ namespace WFC
                     cells[x, y] = new VirtualImageCell(image, new(x, y));
                 }
             }
+            onAlgorithmEnd.RemoveListener(ApplyImage);
+            onAlgorithmEnd.AddListener(ApplyImage);
+        }
+
+        private void ApplyImage()
+        {
+            cells[0, 0].image.sprite.texture.Apply();
         }
         private void Start()
         {
@@ -155,6 +170,7 @@ namespace WFC
         }
         public void Restart()
         {
+            StopAllCoroutines();
             Clear();
             RunAlgorithm();
         }
@@ -203,6 +219,7 @@ namespace WFC
                 {
                     if (CollapseCell(x, y) == null)
                     {
+                        onAlgorithmEnd.Invoke();
                         Clear(x, y);
                         yield break;
                     }
@@ -212,6 +229,8 @@ namespace WFC
                     }
                 }
             }
+            onAlgorithmEnd.Invoke();
+
         }
         IEnumerator HorizontalModel()
         {
@@ -221,6 +240,7 @@ namespace WFC
                 {
                     if (CollapseCell(x, y) == null)
                     {
+                        onAlgorithmEnd.Invoke();
                         Clear(x, y);
                         yield break;
                     }
@@ -230,6 +250,8 @@ namespace WFC
                     }
                 }
             }
+            onAlgorithmEnd.Invoke();
+
         }
 
         IEnumerator ShannonModel()
@@ -249,6 +271,8 @@ namespace WFC
                     float min = entropies.Cast<float>().Min();
                     if (float.IsPositiveInfinity(min))
                     {
+                        onAlgorithmEnd.Invoke();
+                        Clear();
                         yield break;
                     }
                     var equalEntropyCells = cells.Cast<ImageCell>().Select(x => x).Where(x => x.Entropy() == min);
@@ -269,6 +293,8 @@ namespace WFC
                     }
                     if (CollapseCell(xIndex, yIndex) == null)
                     {
+                        onAlgorithmEnd.Invoke();
+                        Clear();
                         yield break;
                     }
                     if (animate)
@@ -277,6 +303,8 @@ namespace WFC
                     }
                 }
             }
+            onAlgorithmEnd.Invoke();
+
         }
         IEnumerator RandomModel()
         {
@@ -302,6 +330,8 @@ namespace WFC
                 {
                     if (CollapseCell(randomXIndices[y], indexArray[randomXIndices[y]][x]) == null)
                     {
+                        onAlgorithmEnd.Invoke();
+                        Clear();
                         yield break;
                     }
                     if (animate)
@@ -310,6 +340,8 @@ namespace WFC
                     }
                 }
             }
+            onAlgorithmEnd.Invoke();
+
         }
         private CellVariable CollapseCell(int x, int y)
         {
@@ -381,6 +413,10 @@ namespace WFC
             if (Input.GetKeyDown(KeyCode.A))
             {
                 cells[0, 0].image.sprite.texture.Apply();
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Restart();
             }
         }
     }
