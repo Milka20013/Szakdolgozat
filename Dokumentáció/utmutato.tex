@@ -1,0 +1,80 @@
+\chapter{Útmutató}
+A program elején egy jól ismert mini-játék fogad az úgynevezett "Dino game". Az implementációm egy jóval egyszerűbb verziója az eredeti játéknak, egy játékos menüként fogható fel.
+\begin{itemize}
+    \label{item:dino-runner-utmutato}
+        \item Ugrani a "SPACE" billentyűvel lehet
+        \item Piros háromszögek jönnek elő jobbról, ezeknek ha neki ütközünk akkor a háromszög tetején látható scene-re irányítódunk át.
+\end{itemize}
+\textbf{Fontos:} minden scene rendelkezik egy felugró menüvel, ezt az "ESCAPE" billentyűvel érhetjük el. Innen a "Main menu" gombot lenyomva áttérhetünk egy hagyományosabb kezdő menüre.\\
+Az alábbi scene-ek érhetőek el a menüből:\\
+GC\\
+WFC / WFCSelectorScene\\
+\textit{SubwaySurfer}
+\section{GC}
+Irányítás:
+\begin{itemize}
+    \label{item:GC-iranyitas}
+        \item Nagyítani-kicsinyíteni a görgővel lehet.
+        \item A kamerát a WASD és a nyilak segítségével mozgathatjuk.
+\end{itemize}
+Használat:
+\begin{itemize}
+    \label{item:GC-hasznalat}
+        \item A "Run algorithm" gombbal generálhatunk új világot. Ez paraméterezés nélkül is működik, előre beállított értékékkel.
+        \item World dimensions: 
+        \begin{itemize}
+            \item Width: a világ négyzetrácsának vízszintes nagysága
+            \item Height: a világ négyzetrácsának függőleges nagysága
+        \end{itemize}
+        \item Max number of stars: megadható hogy maximum hány csillag generálódjon a térben. A végleges száma a csillagoknak ettől eltérő lehet (kevesebb). Maximum $$Width * Height$$ darab csillag generálható.
+        \item Max number of black holes: megadható hogy maximum hány fekete lyuk generálódjon a térben. A végleges száma a feketelyukaknak ettől eltérő lehet (kevesebb). Maximum $$Width * Height - Csillagok$$ feketelyuk generálható.
+        \item Resource density: megadható milyen sűrűen legyenek elhelyezve "relikviák". 0-1 közötti érték, az üresen maradt helyek száma határozza meg a generálást.
+        \item Spacing: a világ négyzetrácsainak nagyságát lehet állítani vele. A generálás egységnyi nagyságú négyzetrácsokon történik, aztán kerül sor a transzformációra.
+        \item Position noise: a négyzetrácsok közepétől mekkora sugarú körben vándorolhatnak el az égitestek. A változásra még a "Spacing" paraméter hatása elött kerül sor.
+\end{itemize}
+\section{WFC / WFCSelectorScene}
+Használat:
+\begin{itemize}
+    \label{item:WFC-hasznalat}
+        \item A program beolvassa a /Szakdolgozat2D\_Data/StreamingAssetsPath/input mappában lévő png kiterjesztésű fájlokat, ezen képeket használhatjuk fel a generálásra. Valamely képre kattintva, majd a felugró ablakon a "load" gombot lenyomva haladhatunk tovább.
+        \item Cell can neighbor itself: ezen beállítással módosítható, hogy a képből generált cellák szomszédjai lehetnek-e saját maguknak mindenféleképpen, vagy csak akkor, ha az a referencia képen is látható.
+        \item Continous block picking: ezen beállítással módosítható, hogy a beolvasás során a blokkok takarhatják-e egymást vagy sem. Igaz érték esetén minden NxM-es blokkot beolvas a program, hamis esetén pedig úgy, mintha dominók lennének.
+        \item Block dimensions: 
+        \begin{itemize}
+            \item Width: a blokkok szélessége.
+            \item Height: a blokkok magassága.
+        \end{itemize}
+        \item Image size: mekkora a referencia képünk nagysága pixelekben mérve.
+        \item Potential block count: ha minden blokk különböző lenne, akkor mennyi blokk képződne az eljárás során.
+        \item Generate: a gomb lenyomásával legenerálódnak a blokkok. A gomb lenyomása után két gomb válik láthatóvá:
+        \begin{itemize}
+            \item Check blocks: ha kevesebb mint 40 blokk generálódott, akkor megtekinthetőek a gomb lenyomásával.  A feulgró ablakban láthatóak a blokkok, illetve alattuk az, hogy mekkora súllya van egy blokknak. Ez a súly változtatható, illetve negatív érték esetén a blokk bellítható "wildcard" blokknak (ilyen esetben a blokk súlya nem változik).
+            \item Next: a következő paraméterezésre léphetünk át.
+        \end{itemize}
+\end{itemize}
+Next gomb lenyomása után:
+\begin{itemize}
+    \label{item:WFC-hasznalat3}
+        \item Animate the algorithm: csak cella módban működik. A generálás blokkról-blokkra láthatóva válik. A generálás során kikapcsolható.
+        \item Cell mode: cella módban, vagy egyszerűsített módban generáljon az algoritmus. A cella mód egyenként fog kép objektumokat generálni, az egyszerűsített mód pedig egy képet generál. Nagy méretű textűra generálás esetén ajánlott az egyszerűsített mód.
+        \item Use local weights: a generálás során lokális vagy globális súlyokat használjon a program.
+        \item Block dimensions: a szélességnek és magasságnak oszhatónak kell lennie a blokk szélességével / magasságával.
+        \begin{itemize}
+            \item Width: a generált kép szélessége.
+            \item Height: a generált kép magassága.
+        \end{itemize}
+        \item Image size: mekkora lesz a tényleges képméret, képpontokban megadva.
+        \item Model: kiválasztható melyik bejárási model szerint generáljon a program.
+        \begin{itemize}
+            \item HORIZONTAL / VERTICAL: vízszintes / függőleges bejárási irány.
+            \item RANDOM: véletlenszerű bejárási irány. Magasabb az esélye hogy a generálás elakad, ha sok a megszorító szomszédsági reláció.
+            \item SHANNON\_MODEL: Shannon-entrópiát használó bejárás. Lassabb mint a többi.
+        \end{itemize}
+        \item Run algorithm: a képgenerálás lefuttatása. A futtatás után a paraméterek újra változtathatóak. A blokkok változtatása csak a menübe kilépve árhető el újra.
+\end{itemize}
+\section{SubwaySurfer}
+Ez a scene csak a "runner" scene-ből érhető el.
+\begin{itemize}
+    \label{item:SubwaySurfer-hasznalat}
+        \item Mozogni a nyilakkal, illetve a WASD billentyűkkel lehet. Ütközés esetén az "ESCAPE" lenyomása után a "runner" menüpontból érhető el a scene.
+\end{itemize} 
