@@ -19,6 +19,11 @@ namespace ProjectCore
             SceneManager.LoadScene("MenuScene");
         }
 
+        public void OnRunnerClicked()
+        {
+            SceneManager.LoadScene("DinoRunner");
+
+        }
         public void OnExitPressed()
         {
             Application.Quit();
