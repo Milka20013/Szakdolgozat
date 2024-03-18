@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace WFC
 {
+    /// <summary>
+    /// Cells used by the WFC algoritm.
+    /// </summary>
     public class CellVariable : IWeighted
     {
         public CellVariable()
@@ -24,6 +27,11 @@ namespace WFC
             return weight;
         }
 
+        /// <summary>
+        /// Get the cell that would be the most likely to neighbor this cell according to the input.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public CellVariable PreferredOption(List<CellVariable> options)
         {
             float[] weights = new float[options.Count];

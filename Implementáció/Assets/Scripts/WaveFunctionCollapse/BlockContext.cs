@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace WFC
 {
+    /// <summary>
+    /// UI component, this is the popup window after "check blocks" are clicked
+    /// </summary>
     public class BlockContext : MonoBehaviour
     {
         [SerializeField] private GameObject cellPrefab;

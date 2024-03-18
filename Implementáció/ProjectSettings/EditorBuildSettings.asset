@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/DinoRunner.unity
+    guid: 4a3f2053caec47d47a59801aba8d4d99
+  - enabled: 1
     path: Assets/Scenes/MenuScene.unity
     guid: 2a31e31a764290043bdbeec25cdee88a
   - enabled: 1
@@ -14,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WFCGenerator.unity
     guid: 8cdca3e24f67e664095e600f75028f4b
+  - enabled: 1
+    path: Assets/Scenes/GC.unity
+    guid: 6f54d018f25fe4a4ca68edd5a7d7d268
+  - enabled: 1
+    path: Assets/Scenes/SubwaySurfer.unity
+    guid: eaff1c41f5fa8614eb99d49e92d4a3aa
   m_configObjects: {}

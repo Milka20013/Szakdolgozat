@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace WFC
 {
+    /// <summary>
+    /// Wrapper class to assign position and occurance to a texture block.
+    /// </summary>
     public class PositionedBlock
     {
         public Texture2D block;

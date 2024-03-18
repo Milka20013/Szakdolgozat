@@ -3,6 +3,10 @@ using UnityEngine.EventSystems;
 
 namespace WFC
 {
+    /// <summary>
+    /// UI element in WFC generation
+    /// It makes it possible to "zoom" on to an image and select it
+    /// </summary>
     public class ImageButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
     {
         private Canvas canvas;

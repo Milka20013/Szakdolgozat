@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace WFC
 {
+    /// <summary>
+    /// UI element to pick the model in WFC generation
+    /// </summary>
     public class ModelPicker : MonoBehaviour
     {
         [SerializeField] private TMP_Dropdown dropdown;

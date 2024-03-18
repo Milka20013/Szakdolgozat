@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace ProjectCore
 {
+    /// <summary>
+    /// Static helper class for commonly used functions
+    /// </summary>
     public static class ProjectManager
     {
         public static T RandomElement<T>(IEnumerable<T> collection, out int index)

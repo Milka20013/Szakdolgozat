@@ -4,6 +4,10 @@ using UnityEngine.UI;
 
 namespace WFC
 {
+    /// <summary>
+    /// UI component in WFC generation
+    /// Makes it possible to select an image as the reference
+    /// </summary>
     public class ImageContext : MonoBehaviour
     {
         [SerializeField] private Image image;

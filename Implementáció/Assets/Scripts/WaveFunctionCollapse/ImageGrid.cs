@@ -17,6 +17,9 @@ namespace WFC
     {
         VERTICAL, HORIZONTAL, SHANNON_ENTROPY, RANDOM
     }
+    /// <summary>
+    /// The generator of the WFC algorithm
+    /// </summary>
     public class ImageGrid : MonoBehaviour
     {
         public Vector2Int dimension;
@@ -47,6 +50,7 @@ namespace WFC
             //Init();
         }
 
+        //These methods are used by the UI in the generation scene to set the variables via user input.
         public void SetCellMode(bool value)
         {
             cellMode = value;
@@ -95,6 +99,9 @@ namespace WFC
         {
             imageSizeText.text = (scale * dimension.x).ToString() + "x" + (scale * dimension.y).ToString();
         }
+        /// <summary>
+        /// Init the algorithm based on the cellMode variable
+        /// </summary>
         public void Init()
         {
             cells = new ImageCell[dimension.x, dimension.y];
@@ -108,7 +115,10 @@ namespace WFC
             }
             RunAlgorithm();
         }
-
+        /// <summary>
+        /// Init the algorithm with cells. Every cell gets an individual image component and it is initialized into the scene.
+        /// Much slower than the non cell mode, but it can be animated.
+        /// </summary>
         private void InitCellMode()
         {
             for (int x = 0; x < dimension.x; x++)
@@ -123,6 +133,10 @@ namespace WFC
                 }
             }
         }
+        /// <summary>
+        /// Init the algorithm with virtual cells. Every cell gets the same image and they can write their data onto it.
+        /// Much faster than the cell method, but it can't be animated.
+        /// </summary>
 
         private void InitNonCellMode()
         {
@@ -153,28 +167,39 @@ namespace WFC
             onAlgorithmEnd.RemoveListener(ApplyImage);
             onAlgorithmEnd.AddListener(ApplyImage);
         }
-
+        /// <summary>
+        /// This is a method used on the end of the algorithm if the mode is not cell mode.
+        /// It is necessary as the resulting image has to be rendered at the end.
+        /// Multiple calls of apply would cause performance issues.
+        /// </summary>
         private void ApplyImage()
         {
             cells[0, 0].image.sprite.texture.Apply();
         }
-        private void Start()
-        {
-            //RunAlgorithm();
-        }
+        /// <summary>
+        /// Restart the algorithm and reset the iteration counter.
+        /// TO-DO: fix this method
+        /// </summary>
         public void HardRestart()
         {
             //currentIterations = 0;
             Clear();
             RunAlgorithm();
         }
+        /// <summary>
+        /// Restart the algorithm
+        /// </summary>
         public void Restart()
         {
             StopAllCoroutines();
             Clear();
             RunAlgorithm();
         }
-
+        /// <summary>
+        /// Clear the grid by reseting all the cells from startX and startY
+        /// </summary>
+        /// <param name="startX"></param>
+        /// <param name="startY"></param>
         public void Clear(int startX = 0, int startY = 0)
         {
             for (int x = startX; x < dimension.x; x++)
@@ -185,6 +210,10 @@ namespace WFC
                 }
             }
         }
+        /// <summary>
+        /// Run the algorithm based on the PickModel state
+        /// As the algorithm can repeat itself, number of executions are limited to maxIterations.
+        /// </summary>
         public void RunAlgorithm()
         {
             currentIterations++;
@@ -211,6 +240,10 @@ namespace WFC
             }
 
         }
+        /// <summary>
+        /// Go through the cells vertically starting at the bottom left corner
+        /// </summary>
+        /// <returns></returns>
         IEnumerator VerticalModel()
         {
             for (int x = 0; x < dimension.x; x++)
@@ -232,6 +265,10 @@ namespace WFC
             onAlgorithmEnd.Invoke();
 
         }
+        /// <summary>
+        /// Go through the cells horizontally starting at the bottom left corner
+        /// </summary>
+        /// <returns></returns>
         IEnumerator HorizontalModel()
         {
             for (int y = 0; y < dimension.y; y++)
@@ -253,7 +290,11 @@ namespace WFC
             onAlgorithmEnd.Invoke();
 
         }
-
+        /// <summary>
+        /// Go through the cells according to their entropy. The lowest entropy cells get picked, randomly if multiple exists.
+        /// TO-DO: optimize the complexity (it is O(n^4) currently)
+        /// </summary>
+        /// <returns></returns>
         IEnumerator ShannonModel()
         {
             float[,] entropies = new float[dimension.x, dimension.y];
@@ -306,6 +347,11 @@ namespace WFC
             onAlgorithmEnd.Invoke();
 
         }
+
+        /// <summary>
+        /// Go through the cells in a random order, and collapse them
+        /// </summary>
+        /// <returns></returns>
         IEnumerator RandomModel()
         {
             int[][] indexArray = new int[dimension.x][];
@@ -343,6 +389,12 @@ namespace WFC
             onAlgorithmEnd.Invoke();
 
         }
+        /// <summary>
+        /// Determine the final state of the cell, and set its neighbors.
+        /// </summary>
+        /// <param name="x">x position of the cell</param>
+        /// <param name="y">y position of the cell</param>
+        /// <returns></returns>
         private CellVariable CollapseCell(int x, int y)
         {
             CellVariable cellVariable;
@@ -381,6 +433,10 @@ namespace WFC
             return cellVariable;
         }
 
+        /// <summary>
+        /// Exports the result into an image named imageOutput.png.
+        /// TO-DO: update this function to export the image when it is not composed by cells.
+        /// </summary>
         public void ExportImage()
         {
             int xDimension = dimension.x * cells[0, 0].image.sprite.texture.width;
@@ -406,6 +462,8 @@ namespace WFC
 
         private void Update()
         {
+            //inputs to test stuff in editor
+            //#REMOVE
             if (Input.GetKeyDown(KeyCode.E))
             {
                 ExportImage();

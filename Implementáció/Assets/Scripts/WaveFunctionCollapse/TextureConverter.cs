@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 namespace WFC
 {
+    /// <summary>
+    /// Converter for the reference image in WFC algorithm.
+    /// </summary>
     public class TextureConverter : MonoBehaviour
     {
         private Texture2D referenceTexture;
@@ -55,6 +58,7 @@ namespace WFC
             }
             blockDimensions = new(width, height);
         }
+        //These methods are used in UI
         public void SetCellNeighbor(bool value)
         {
             cellCanNeighborItself = value;
@@ -89,6 +93,10 @@ namespace WFC
             }
         }
 
+        /// <summary>
+        /// Refresh the block count on the UI
+        /// It is not accurate, but a high bound to the number of blocks generated.
+        /// </summary>
         private void RefreshBlockCount()
         {
             bool wrong = false;
@@ -119,6 +127,9 @@ namespace WFC
                 blockCountText.text = "NON INTEGER";
             }
         }
+        /// <summary>
+        /// Start the converting procedure
+        /// </summary>
         public void Init()
         {
             try
@@ -144,6 +155,9 @@ namespace WFC
                 successText.text = e.Message;
             }
         }
+        /// <summary>
+        /// Used in UI
+        /// </summary>
         public void NextParameters()
         {
             blockGenerationParameters.SetActive(false);
@@ -166,7 +180,9 @@ namespace WFC
                 numberOfBlocksPerColoumn = referenceTexture.width - blockDimensions.x + 1;
             }
         }
-
+        /// <summary>
+        /// Create the cellVariables and their neighbor connections
+        /// </summary>
         private void SetPositionedCellVariables()
         {
             positionedCellVariables = new();
@@ -193,7 +209,10 @@ namespace WFC
                 }
             }
         }
-
+        /// <summary>
+        /// Convert the image like it is a grid. A 4x4 grid has 16 1x1 cells and 4 2x2 cells.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         private void BlockAsGridImageConversion()
         {
             if (referenceTexture.width % blockDimensions.x != 0)
@@ -227,7 +246,12 @@ namespace WFC
                 }
             }
         }
-
+        /// <summary>
+        /// Convert the image like it is not a grid. A 4x4 grid has 16 1x1 cells and 9 2x2 cells.
+        /// Any NxN region can be chosed in the grid to create cells.
+        /// TO-DO: make this version viable, currently it should not be used
+        /// #REMOVE ?
+        /// </summary>
         private void BlockAsAnyPositionImageConversion()
         {
             for (int i = 0; i < referenceTexture.width - blockDimensions.x + 1; i++)
@@ -253,7 +277,13 @@ namespace WFC
                 }
             }
         }
-
+        /// <summary>
+        /// Hash the image, so it can be checked whether an image block was already checked.
+        /// Probably faster than pixel-by-pixel comparison of all of the previous images. :)
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="positionedBlock"></param>
+        /// <returns></returns>
         private bool CheckIfBlockExists(Texture2D block, out PositionedBlock positionedBlock)
         {
             SHA256 sha = SHA256.Create();
@@ -269,7 +299,11 @@ namespace WFC
             positionedBlock = null;
             return false;
         }
-
+        /// <summary>
+        /// Read a NxM dimension block defined in dimension variable from the reference, starting from the up left corner.
+        /// </summary>
+        /// <param name="upLeftCorner"></param>
+        /// <returns></returns>
         private Texture2D ReadBlockFromReferenceTexture(Vector2Int upLeftCorner)
         {
             Texture2D block = new(blockDimensions.x, blockDimensions.y, TextureFormat.RGBA32, false)
@@ -286,7 +320,11 @@ namespace WFC
             block.Apply();
             return block;
         }
-
+        /// <summary>
+        /// Get the position of the neighbors. It is calculated as the block were on a torus
+        /// </summary>
+        /// <param name="block"></param>
+        /// <returns></returns>
         private Vector2Int[] GetNeighboursPosition(PositionedBlock block)
         {
             Vector2Int[] positions = new Vector2Int[block.positions.Count * 4];
@@ -300,6 +338,12 @@ namespace WFC
 
             return positions;
         }
+        /// <summary>
+        /// Search the cellvariables on the positions, and assign those the cellVariable given as a paramater.
+        /// The neighbors get the cellVariable as their negihbor too.
+        /// </summary>
+        /// <param name="positionedCellVariable"></param>
+        /// <param name="neighboursPositions"></param>
         private void SetNeighbours(PositionedCellVariable positionedCellVariable, Vector2Int[] neighboursPositions)
         {
             HashSet<CellVariable>[] directionalNeighbours = new HashSet<CellVariable>[4];
@@ -323,6 +367,11 @@ namespace WFC
             positionedCellVariable.cellVariable.up = directionalNeighbours[2].ToList();
             positionedCellVariable.cellVariable.down = directionalNeighbours[3].ToList();
         }
+        /// <summary>
+        /// Make it possible for a cell to neighbor itself any way
+        /// </summary>
+        /// <param name="targetCellVariable"></param>
+        /// <param name="cell"></param>
         private void SetCellAsAnyNeighbour(PositionedCellVariable targetCellVariable, PositionedCellVariable cell)
         {
             if (!targetCellVariable.cellVariable.up.Contains(cell.cellVariable))

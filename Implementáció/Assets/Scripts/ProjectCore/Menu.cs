@@ -9,6 +9,8 @@ namespace ProjectCore
         [SerializeField] private GameObject[] objectsOn2DOption;
 
         [SerializeField] private string WFCSelectorScene;
+        [SerializeField] private string GCScene;
+
 
         public void On2DPressed()
         {
@@ -36,19 +38,18 @@ namespace ProjectCore
             }
         }
 
-        public void OnExitPressed()
-        {
-            Application.Quit();
-        }
+
 
         public void OnWFCPressed()
         {
             SceneManager.LoadScene(WFCSelectorScene);
         }
 
-        public void OnSimplePressed()
+        public void OnGCPressed()
         {
-
+            SceneManager.LoadScene(GCScene);
         }
+
+
     }
 }

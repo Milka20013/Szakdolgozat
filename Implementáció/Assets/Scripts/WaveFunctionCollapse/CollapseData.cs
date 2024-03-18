@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace WFC
 {
+    /// <summary>
+    /// Helper class inside the cells. Helps with entropy and neighboring.
+    /// </summary>
     public class CollapseData
     {
         public CollapseData()

@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace WFC
 {
+    /// <summary>
+    /// Not used, should propably delete
+    /// #REMOVE
+    /// </summary>
     [CreateAssetMenu(menuName = "CellVariable")]
     public class CellVariableSO : ScriptableObject, IWeighted
     {

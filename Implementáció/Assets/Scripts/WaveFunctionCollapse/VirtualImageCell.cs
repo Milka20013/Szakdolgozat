@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace WFC
 {
+    /// <summary>
+    /// Virtual image cells. These cells share a big image among themselves and they write their data onto the shared image.
+    /// Only 1 image will exist in the scene, so they are not physically spawned one-by-one as a regular image cell.
+    /// </summary>
     public class VirtualImageCell : ImageCell
     {
         private Vector2Int position;

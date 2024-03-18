@@ -6,6 +6,8 @@ public class ObstacleSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject[] obstacles;
     [SerializeField] private float spawnInterval;
+    private int numberOfSpawnedObjects = 0;
+    private string[] sceneNames = { "GC", "WFCSelectorScene", "SubwaySurfer" };
 
     private void Start()
     {
@@ -14,7 +16,11 @@ public class ObstacleSpawner : MonoBehaviour
     private void SpawnObstacle()
     {
         var obj = ProjectManager.RandomElement(obstacles);
-        Instantiate(obj, transform.position, Quaternion.identity);
+        var instance = Instantiate(obj, transform.position, Quaternion.identity);
+        var obstacle = instance.GetComponent<Obstacle>();
+        obstacle.sceneName = sceneNames[numberOfSpawnedObjects % sceneNames.Length];
+        obstacle.text.text = obstacle.sceneName;
+        numberOfSpawnedObjects++;
     }
 
     IEnumerator SpawnObjects()

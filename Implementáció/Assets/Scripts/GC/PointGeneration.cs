@@ -8,21 +8,24 @@ namespace GC
     public class PointGeneration : MonoBehaviour
     {
         [SerializeField] private CelestialBodySOContainer container;
-        [SerializeField] private int maxNumberOfStars;
-        [SerializeField] private int maxNumberOfBlackHoles;
+        public int maxNumberOfStars;
+        public int maxNumberOfBlackHoles;
+        public float blackHoleClearZoneRadius = 1f;
         private Point[,] points;
         [Range(0f, 1f)]
-        [SerializeField] private float resourceDensity;
-        [SerializeField] private Vector2Int dimension;
-        [SerializeField] private float spacing;
-        [SerializeField] private float positionNoise;
+        public float resourceDensity;
+        public Vector2Int dimension;
+        public float spacing;
+        public float positionNoise;
         [SerializeField] private GameObject pointPrefab;
         [SerializeField] private GameObject holePrefab;
         [SerializeField] private GameObject resourcePrefab;
 
         private List<GameObject> generatedObjects = new();
-
-        public void GeneratePoints()
+        /// <summary>
+        /// Run the generation
+        /// </summary>
+        public void RunAlgorithm()
         {
             points = new Point[dimension.x, dimension.y];
 
@@ -41,7 +44,10 @@ namespace GC
 
             GenerateResources();
         }
-
+        /// <summary>
+        /// Generate maxNumberOfStars amount of stars randomly in a grid given by the dimension variable.
+        /// </summary>
+        /// <returns></returns>
         private int[] GenerateStars()
         {
             int[] indexArray = new int[dimension.x * dimension.y];
@@ -50,7 +56,7 @@ namespace GC
                 indexArray[i] = i;
             }
             ProjectManager.ShuffleArray(indexArray);
-            for (int i = 0; i < maxNumberOfStars * 2; i++)
+            for (int i = 0; i < maxNumberOfStars; i++)
             {
                 var x = indexArray[i] / dimension.y;
                 var y = indexArray[i] % dimension.y;
@@ -59,7 +65,12 @@ namespace GC
             }
             return indexArray;
         }
-
+        /// <summary>
+        /// Generate a maximum number of maxNumberOfBlackHoles black holes. The holes are generated where the stars did not.
+        /// A black hole rules out other black holes in a 5x5 area, and nothing can be next to the black hole in a 3x3 area.
+        /// Execption to this are the stars that are farther away from the hole than the blackHoleClearZoneRadius units.
+        /// </summary>
+        /// <param name="indexArray"></param>
         private void GenerateBlackHoles(int[] indexArray)
         {
             int currentBlackHoleNumber = 0;
@@ -79,12 +90,14 @@ namespace GC
                 points[x, y].SetType(PointType.Black_Hole);
                 EliminateNeighbors(x, y, 5, 5, points, PointType.Unknown, PointType.Temporary, 50);
                 points[x, y].RandomizePosition(positionNoise / 2);
-                EliminateNeighbors(x, y, 3, 3, points, PointType.Any, PointType.None, 1);
+                EliminateNeighbors(x, y, 3, 3, points, PointType.Any, PointType.None, blackHoleClearZoneRadius);
 
             }
             EliminateTemporaries();
         }
-
+        /// <summary>
+        /// Generate resources where the points can be anything. The density is controlled by the resourceDensity variable.
+        /// </summary>
         private void GenerateResources()
         {
             for (int i = 0; i < dimension.x; i++)
@@ -103,6 +116,10 @@ namespace GC
                 }
             }
         }
+        /// <summary>
+        /// Random point generation to show the difference
+        /// Might be used in presentation
+        /// </summary>
         public void GeneratePoints2()
         {
             points = new Point[1, maxNumberOfStars];
@@ -112,7 +129,18 @@ namespace GC
             }
         }
 
-
+        /// <summary>
+        /// Set the neighboring cells type into an other based on the type and position of the cell.
+        /// The algorithm considers the distance from the original cell as well.
+        /// </summary>
+        /// <param name="x">x coordinate of the initial cell</param>
+        /// <param name="y">y coordinate of the initial cell</param>
+        /// <param name="width">Width of the area to check neighbors in</param>
+        /// <param name="height">Height of the area to check neighbors in</param>
+        /// <param name="array">The point array to iterate to. May be removed</param>
+        /// <param name="targetType">These types should be eliminated. If set to any, any type can be eliminated</param>
+        /// <param name="elimType">The points will have this type</param>
+        /// <param name="minDistance">If the points are farther away than this parameter, they don't get removed</param>
         private void EliminateNeighbors(int x, int y, int width, int height, Point[,] array,
             PointType targetType, PointType elimType, float minDistance)
         {
@@ -141,7 +169,9 @@ namespace GC
                 }
             }
         }
-
+        /// <summary>
+        /// Set every temporary point to unknown
+        /// </summary>
         private void EliminateTemporaries()
         {
             for (int i = 0; i < dimension.x; i++)
@@ -157,16 +187,23 @@ namespace GC
         }
         private void Start()
         {
-            GeneratePoints();
+            RunAlgorithm();
             InstantiatePoints();
         }
-
+        /// <summary>
+        /// Run the algorithm normally
+        /// Used in editor
+        /// </summary>
         public void GeneratePseudoRandomPoints()
         {
             Clear();
-            GeneratePoints();
+            RunAlgorithm();
             InstantiatePoints();
         }
+        /// <summary>
+        /// Used in editor
+        /// TO-DO: Clear this up
+        /// </summary>
         public void GenerateRandomRandomPoints()
         {
             Clear();
@@ -174,7 +211,9 @@ namespace GC
             InstantiatePoints();
 
         }
-
+        /// <summary>
+        /// Physically spawn the points into the scene
+        /// </summary>
         private void InstantiatePoints()
         {
             foreach (var item in points)
@@ -191,12 +230,18 @@ namespace GC
                 instance.GetComponent<CelestialBody>().Init(item, new(dimension.x, dimension.y), spacing);
             }
         }
-
+        /// <summary>
+        /// Get the prefab to spawn from the Scriptable Object container.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         private GameObject GetPrefab(Point point)
         {
             return container.GetPrefab(point);
         }
-
+        /// <summary>
+        /// Deestroy every spawned object
+        /// </summary>
         private void Clear()
         {
             for (int i = 0; i < generatedObjects.Count; i++)

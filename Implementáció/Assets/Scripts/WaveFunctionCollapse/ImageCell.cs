@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace WFC
 {
+    /// <summary>
+    /// Physical representation of a cellVariable
+    /// </summary>
     public class ImageCell
     {
         public Image image;
@@ -13,6 +16,10 @@ namespace WFC
             this.image = image;
             this.collapseData = new();
         }
+        /// <summary>
+        /// Determine the state of the cell and set their data onto the image based on global weights
+        /// </summary>
+        /// <returns></returns>
         public CellVariable CollapseCell()
         {
             var cellVariable = CollapseOptionManager.Instance.GetRandomCellVariable(collapseData.neighbours);
@@ -25,6 +32,10 @@ namespace WFC
 
             return cellVariable;
         }
+        /// <summary>
+        /// Determine the state of the cell and set their data onto the image based on local weights
+        /// </summary>
+        /// <returns></returns>
         public CellVariable CollapseCellWithLocalWeights()
         {
 

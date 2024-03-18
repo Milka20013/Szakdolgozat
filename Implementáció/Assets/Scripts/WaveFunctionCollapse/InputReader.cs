@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 namespace WFC
 {
+    /// <summary>
+    /// Input reader used in WFC algorithm.
+    /// </summary>
     public class InputReader : MonoBehaviour
     {
 
@@ -22,7 +25,9 @@ namespace WFC
         {
             ReadImagesFromFolder();
         }
-
+        /// <summary>
+        /// Read all the png images placed in the streamingAssetsPath directory
+        /// </summary>
         private void ReadImagesFromFolder()
         {
             string[] fileNames = Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, inputPath), "*.png").ToArray();
@@ -32,7 +37,9 @@ namespace WFC
             }
             InstantiateImages();
         }
-
+        /// <summary>
+        /// Spawn the images into the scene
+        /// </summary>
         private void InstantiateImages()
         {
             for (int i = 0; i < textures.Count; i++)
@@ -48,6 +55,11 @@ namespace WFC
                 //CollapseOptionManager.Instance.cellVariables = positionedCellVariables.Select(x => x.cellVariable).ToArray();
             }
         }
+        /// <summary>
+        /// Convert png image to texture for the generation
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="countOfFiles"></param>
         private void ConvertImageToTextureFromFile(string fileName, int countOfFiles)
         {
             var bytes = File.ReadAllBytes(fileName);

@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace WFC
 {
+    /// <summary>
+    /// Connection between cells to implement local weights.
+    /// Connections are not ordered, so A-B is the same as B-A.
+    /// </summary>
     public class LocalWeightConnection : IWeighted
     {
         public static List<LocalWeightConnection> Connections { get; private set; } = new();
@@ -15,7 +19,11 @@ namespace WFC
             cells = (c1, c2);
             weight = 1;
         }
-
+        /// <summary>
+        /// Used to create connections instead of the constructor, as the reference matters.
+        /// </summary>
+        /// <param name="c1"></param>
+        /// <param name="c2"></param>
         public static void CreateOrRegister(CellVariable c1, CellVariable c2)
         {
             if (c1 == null || c2 == null)
@@ -46,7 +54,11 @@ namespace WFC
             var chosenConnection = ProjectManager.RandomElementWeighted(connections);
             return chosenConnection.GetPair(c1);
         }
-
+        /// <summary>
+        /// Get the other member in the connection
+        /// </summary>
+        /// <param name="c1"></param>
+        /// <returns></returns>
         public CellVariable GetPair(CellVariable c1)
         {
             if (cells.Item1 == c1)
