@@ -188,7 +188,7 @@ namespace WFC
             positionedCellVariables = new();
             foreach (var pBlock in positionedBlocks)
             {
-                var cellV = new CellVariable
+                var cellV = new CellVariable()
                 {
                     sprite = Sprite.Create(pBlock.block, new Rect(0, 0, pBlock.block.width, pBlock.block.height), new(0.5f, 0.5f)),
                     weight = pBlock.occurence,

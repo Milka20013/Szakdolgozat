@@ -63,5 +63,19 @@ namespace GC
                 pointGeneration.positionNoise = result;
             }
         }
+        public void SetPlanetDensity(string text)
+        {
+            if (float.TryParse(text, out float result))
+            {
+                pointGeneration.planetDensity = result;
+            }
+        }
+        public void SetPlanetPerStar(string text)
+        {
+            if (int.TryParse(text, out int result))
+            {
+                pointGeneration.maxPlanetsPerStar = result;
+            }
+        }
     }
 }

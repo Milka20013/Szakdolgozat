@@ -1,4 +1,5 @@
 \chapter{Útmutató}
+\label{Utmutato}
 A program elején egy jól ismert mini-játék fogad az úgynevezett "Dino game". Az implementációm egy jóval egyszerűbb verziója az eredeti játéknak, egy játékos menüként fogható fel.
 \begin{itemize}
     \label{item:dino-runner-utmutato}
@@ -36,7 +37,8 @@ Használat:
 Használat:
 \begin{itemize}
     \label{item:WFC-hasznalat}
-        \item A program beolvassa a /Szakdolgozat2D\_Data/StreamingAssetsPath/input mappában lévő png kiterjesztésű fájlokat, ezen képeket használhatjuk fel a generálásra. Valamely képre kattintva, majd a felugró ablakon a "load" gombot lenyomva haladhatunk tovább.
+        \item A program beolvassa a /Szakdolgozat2D\_Data/StreamingAssetsPath/input \\
+        mappában lévő png kiterjesztésű fájlokat, ezen képeket használhatjuk fel a generálásra. Valamely képre kattintva, majd a felugró ablakon a "load" gombot lenyomva haladhatunk tovább.
         \item Cell can neighbor itself: ezen beállítással módosítható, hogy a képből generált cellák szomszédjai lehetnek-e saját maguknak mindenféleképpen, vagy csak akkor, ha az a referencia képen is látható.
         \item Continous block picking: ezen beállítással módosítható, hogy a beolvasás során a blokkok takarhatják-e egymást vagy sem. Igaz érték esetén minden NxM-es blokkot beolvas a program, hamis esetén pedig úgy, mintha dominók lennének.
         \item Block dimensions: 
@@ -70,7 +72,7 @@ Next gomb lenyomása után:
             \item RANDOM: véletlenszerű bejárási irány. Magasabb az esélye hogy a generálás elakad, ha sok a megszorító szomszédsági reláció.
             \item SHANNON\_MODEL: Shannon-entrópiát használó bejárás. Lassabb mint a többi.
         \end{itemize}
-        \item Run algorithm: a képgenerálás lefuttatása. A futtatás után a paraméterek újra változtathatóak. A blokkok változtatása csak a menübe kilépve árhető el újra.
+        \item Run algorithm: a képgenerálás lefuttatása. A futtatás után a paraméterek újra változtathatóak. A blokkok változtatása csak a menübe kilépve érhető el újra.
 \end{itemize}
 \section{SubwaySurfer}
 Ez a scene csak a "runner" scene-ből érhető el.

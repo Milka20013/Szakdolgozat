@@ -2,6 +2,7 @@ using ProjectCore;
 using System.Collections;
 using System.IO;
 using System.Linq;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -460,13 +461,31 @@ namespace WFC
             //text.text = "ready";
         }
 
+        public void ExportAsTxt()
+        {
+            StringBuilder builder = new();
+            for (int i = 0; i < dimension.x; i++)
+            {
+                for (int j = 0; j < dimension.y; j++)
+                {
+                    builder.Append(i.ToString() + "," + j.ToString() + "," + cells[i, j].name);
+                    if (j != dimension.y - 1)
+                    {
+                        builder.Append(" ");
+                    }
+                }
+                builder.Append("\n");
+            }
+            File.WriteAllText(Path.Combine(Path.Combine(Application.streamingAssetsPath, outputPath), "output.txt"), builder.ToString());
+        }
+
         private void Update()
         {
             //inputs to test stuff in editor
             //#REMOVE
             if (Input.GetKeyDown(KeyCode.E))
             {
-                ExportImage();
+                ExportAsTxt();
             }
             if (Input.GetKeyDown(KeyCode.A))
             {

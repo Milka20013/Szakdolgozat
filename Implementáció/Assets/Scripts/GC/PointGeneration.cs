@@ -7,6 +7,7 @@ namespace GC
 {
     public class PointGeneration : MonoBehaviour
     {
+        public static PointGeneration instance;
         [SerializeField] private CelestialBodySOContainer container;
         public int maxNumberOfStars;
         public int maxNumberOfBlackHoles;
@@ -17,11 +18,17 @@ namespace GC
         public Vector2Int dimension;
         public float spacing;
         public float positionNoise;
+        public float planetDensity;
+        public int maxPlanetsPerStar;
         [SerializeField] private GameObject pointPrefab;
         [SerializeField] private GameObject holePrefab;
         [SerializeField] private GameObject resourcePrefab;
 
         private List<GameObject> generatedObjects = new();
+        private void Awake()
+        {
+            instance = this;
+        }
         /// <summary>
         /// Run the generation
         /// </summary>

@@ -1,0 +1,67 @@
+\chapter{Égitestek elhelyezése - Űrbéli játékhoz}
+Ez a fejezet egy olyan algoritmusról szól, mely követi az alapjait egy már létező videójáték generálási szabályainak. Ez névszerint a Galactic Civilizations III, űrben játszódó, körökre osztott videójáték pálya generálása.\\
+Nem teljesen ugyanolyan szabályrendszert alkaztam, mint az említett játékban, mivel a pontos szabályai, lépései és implementációja nem publikusan elérhetőek, illetve csak az alapötlet átvétele volt a célom. A módszerem jóval egyszerűbb, illetve nem annyira kifinomult, viszont egy szerintem érdekes problémát tárgyal.\\
+A probléma a következő: hogyan helyezhetünk el úgy pontokat, hogy azok játékmenet szempontjából igazságos és változatos legyenek? Ezt egy kicsit másképp megfogalmazva: hogyan helyezhetünk el úgy pontokat, hogy azok véletlenszerűnek tűnjenek, de legyen közöttük egy minimális távolság? A távolság megkötés azért kell, mert ekkor a pontok \textit{esztétikusan} fedik le a síkot. Esztétika alatt értendő az, hogy két véletlenszerűen megvizsgált területen, nagyjából azonos mennyiségű pont van, függetlenül a területek megválasztásától. A két feltétel ellentmondásos, így a köztes megoldás megtalálása a cél.
+
+\section{Az eljárás alapjai}
+A módszer során pontokat teszünk le egy meghatározott területre, ahol minden pont egy-egy elem a Galactic Civilizations III játékból. Az elemek a következők: csillagok, fekete lyukak, bolygók, nyersanyagok. A kitételek ezekre a pontokra a következők:
+\begin{itemize}
+    \item Minden pont között van legalább $d_1$ egységnyi távolság.
+    \item Csillagok és fekete lyukak között van legalább $d_2$ egységnyi távolság úgy, hogy $d_1 < d_2$.
+    \item A fekete lyukak két zónát határoznak meg. Az elsó zóna egy $b_1$ sugarú kör, ezen a körön belül nem lehet más pont. A második zóna egy $b_2$ sugarú kör, ezen a körön belül nem lehet másik fekete lyuk ($b_1 < b_2$). A körök középpontjának az adott fekete lyukat vesszük.
+    \item A csillagok $c$ sugarú környezetében helyezkedhetnek el a bolygók.
+    \item A pontokat a már említett esztétika szerint helyezzük el.
+\end{itemize}
+Az algoritmus során a pontok generálási sorrendje: csillagok, fekete lyukak, bolygók, nyersanyagok. A sorrend nem szükségszerű, de érdemes betartani.
+
+\section{Állítható paraméterek}
+Azon paraméterek, amik a felhasználó által állíthatóak a jelenet során.
+\begin{enumerate}
+    \item \label{gc-allithato-1} World height / width: ezek a paraméterek határozzák meg azt a területet, amire először generál az algoritmus. Értékük egy pozitív egész szám. Alapértelmezett értékük : 16x9.
+    \item Max number of stars: a paraméter azt határozza meg, hogy maximum mennyi csillagot tehet le az eljárás. A végeredményben szereplő csillagok száma ennél általában kevesebb. Pozitív egész szám. Alapértelmezett értéke: 30.
+    \item Max number of black holes: hasonlóan a csillagokhoz, maximálisan ennyi fekete lyuk jelenhet meg a síkon. Pozitív egész szám. Alapértelmezett értéke: 10.
+    \item Resource density: a fennmaradt üres helyekre mekkora eséllyel kerüljön nyersanyag. Az értéke pozitív valós szám, 0 és 1 között. Alapértelmezett értéke: 0,45.
+    \item Spacing: a módszer először az \ref{gc-allithato-1}. pontban meghatározott értékek szerinti területre teszi le a pontokat. Ezzel a paraméterrel lehet skálázni a pontok koordinátáit, azaz a pontok koordinátái ezen értékkel szorzódnak. Pozitív valós érték. Alapértelmezett értéke: 3.
+    \item Position noise: az elhelyezés során a pontokat négyzetrács pontokra tesszük le, ez a paraméter azt határozza meg, hogy az adott pontot a rácsponttól maximum mekkora távolságra tolhatjuk el valemely irányba. Ez az érték biztosítja a változatosabb, kevésbé kiszámítható elhelyezést. Az eltolás még a skálázás előtt történik. Pozitív valós szám. Alapértelmezett értéke: 0,5.
+    \item Planet density: a csillagok köré generáljuk a bolygókat. Ezt összesen 8 helyre próbáljuk meg, minden csillag esetén. Ez a paraméter határozza meg, hogy mekkora eséllyel kerül az adott helyre bolygó. Pozitív valós szám. Alapértelmezett értéke: 0.2.
+    \item Max number of planets/star: a csillagok köré maximum hány bolygó kerülhet. Pozitív egész szám, maximum 8. Alapértelmezett értéke 4. 
+\end{enumerate}
+
+\newpage
+\begin{table}[htbp]
+\caption{Paraméterek összefogalása}
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+\hline
+Paraméter & Leírás & Érték típus \\
+ \hline\hline
+  World height & A generálási terület magassága & Pozitív egész érték \\
+ \hline
+ World width & A generálási terület szélessége & Pozitív egész érték \\
+ \hline
+ \makecell{Max number of\\ stars} & Maximum ennyi csillag generálódhat  & Pozitív egész érték \\ 
+  \hline
+  \makecell{ Max number of \\ black holes} & Maximum ennyi fekete lyuk generálódhat  & Pozitív egész érték \\ 
+ \hline
+  Resource density & \makecell{A fennmaradt üres helyeken mekkora \\ valószínűséggel teszünk nyersanyagot} & \makecell{Pozitív valós érték \\0 és 1 között }\\
+ \hline
+  Spacing & A terület felskálázására szolgál & Pozitív valós érték \\
+ \hline
+ Position noise & \makecell{Rácspontoktól vett maximum távolság \\ valamely irányba} & Pozitív valós érték \\
+ \hline
+  Planet density & \makecell{A csillagok mellett lévő pontokban\\ mekkora eséllyel generálódhat bolygó.} & \makecell{Pozitív valós érték \\0 és 1 között}\\
+ \hline
+\makecell{Max number of\\ planets/star} & \makecell{Maximum hány bolygó kerülhet \\ a csillagok mellé} & \makecell{Pozitív egész érték \\ maximum 8}\\
+ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\newpage
+\section{Az algoritmus leírása}
+Az eredeti problémára nem egyszerű olyan megoldást adni, ami ésszerű és belátható időn belül lefut. A nehézség abban rejlik, hogy milyen módon tudjuk biztosítani a pontok közötti távolság megszorítását, találomra lehelyezett pontok esetén. Ha véletlenszerűen kezdünk el pontokat letenni a síkra, majd valamilyen séma alapján javítjuk vagy elvetjük a pontokat, könnyen eshetünk abba a csapdába, hogy túl lassú, vagy kiszámíthatatlan programot készítünk. Így érdemes a másik irányból megközelíteni a problémát: generáljunk először olyan pontokat, amik biztosan a megadott minimális távolságra vannak egymástól, majd ezeket a pozíciókat finomíthatjuk, hogy a véletlenszerűség is megjelenjen.\\
+A megadott területet egy négyzetrácsként képzeljük el. Ha a terület $NxK$ nagyságú, akkor egy $NxK$-s négyzetrácsra tesszük az összes pontot. Miután megjelöltünk egy pontot adott égitestként, a \textit{Position noise} paraméter alapján eltoljuk azt valamely irányba. Az, hogy a különböző fajtájú komponensek letevése között milyen sorrendet választunk, megváltoztathatja a végeredményt. Az előbb generált elemek határozzák meg a később letett elemek mennyiségét és pozícióját, ezt érdemes szem előtt tartani.\\
+Kezdjünk a csillagok lehelyezésével. Az $NxK$ darab pont közül kiválasztunk annyit, amennyi a \textit{Max number of stars} paraméter értéke, majd ezeket megjelöljük csillagként. Ahhoz, hogy ne egy valamilyen minta szerint válasszuk a pontokat, összekeverjük őket.\\
+A csillagok lehelyezése után fennmaradt üres helyekre tegyünk fekete lyukakat. A pontokat ugyanúgy összekeverjük. Egy fekete lyuk lehelyezése után végigmegyünk a környező rácspontokon, és az első zónába eső pontokat megjelöljük üresnek. A második zónába eső pontokat pedig megjelöljük olyan pontoknak, amik nem lehetnek fekete lyukak. Az üres pontokon addig megyünk végig, amíg a megfelelő mennyiségű fekete lyukat meg nem jelöltük, vagy az összes üres ponton végig nem mentünk.\\
+Az így fennmaradt szabad helyekre a nyersanyagokat tesszük. Összekeverjük az összes pontot, majd azon pontokra, amelyek még szabadok, eldöntjük, hogy teszünk nyersanyagot vagy sem. Ezt a \textit{Resource density} paraméter befolyásolja. Minél nagyobb az értéke, annál nagyobb eséllyel lesz a pont megjelölve nyersanyagként (1-es érték esetén biztosan).\\
+Végezetül a csillagok köré lehelyezzük a bolygókat. A bolygók egy kicsit megnehezítik a helyzetet, mert nem kerülhetnek a fekete lyukak első zonájába. A feltételt biztosíthatjuk azzal, hogy a bolygók generálása után elvetjük azokat, amelyek a szabályt sértik, vagy a skálázással érjük el a kívánt végeredményt. Most válasszuk a második megoldást. Ez esetben nincs szükség egyéb megszorításra a bolygók terén, csak arra, hogy mekkora távolságra legyenek a csillagoktól. Ezt elérhetjük újból a négyzetrácsos módszerrel. Egy $3x3$-as négyzetrácsot készítünk, melynek középső pontja a vizsgált csillag. A többi nyolc ponton végigmegyünk, majd mindegyik pontra eldöntjük, hogy üres maradjon, vagy bolygót tegyünk rá. A \textit{Planet density} és a \textit{Max number of planets/star} paraméterek döntik el, hogy adott pontba mekkora eséllyel, illetve, hogy összesen mennyi bolygó kerülhet a csillag mellé.

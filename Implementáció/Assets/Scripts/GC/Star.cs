@@ -12,6 +12,8 @@ namespace GC
         private List<GameObject> planets = new();
         private void Start()
         {
+            planetDensity = PointGeneration.instance.planetDensity;
+            maxNumberOfPlanets = PointGeneration.instance.maxPlanetsPerStar;
             SpawnPlanets();
         }
         private void SpawnPlanets()

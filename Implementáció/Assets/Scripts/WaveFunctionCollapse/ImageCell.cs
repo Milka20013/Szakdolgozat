@@ -8,6 +8,7 @@ namespace WFC
     /// </summary>
     public class ImageCell
     {
+        public string name;
         public Image image;
         public CollapseData collapseData;
 
@@ -27,6 +28,7 @@ namespace WFC
             {
                 return null;
             }
+            name = cellVariable.name;
             SetImage(cellVariable);
             collapseData.collapsed = true;
 
@@ -44,6 +46,7 @@ namespace WFC
             {
                 return null;
             }
+            name = cellVariable.name;
             SetImage(cellVariable);
             collapseData.collapsed = true;
 

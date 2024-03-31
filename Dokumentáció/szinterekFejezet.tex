@@ -1,18 +1,61 @@
-\chapter{Színterek típusai}
-A színterek egyik legalapvetőbb tulajdonsága a dimenzióinak száma. 
-\begin{figure}
-\centering
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=190pt]{images/2d-szinter-HeroesIII.jpg}
-  \caption{Felülnézetes színtér\\Heroes III}
-  \label{fig:test1}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=190pt]{images/2d-szinter-Terraria.jpg}
-  \caption{Oldalnézetes színtér\\Terraria}
-  \label{fig:test2}
-\end{minipage}
-\caption*{Példa 2D színterekre}
-\end{figure}
+\chapter{Színterek}
+A dolgozatom lényege a színterek generálása, generálási folyamataiknak bemutatása. Ezáltal
+érdemesnek tartom a színtér fogalmát egy kicsit részletesebben bemutatni.\\
+Önmagában a színtér alatt egy adott helyszínt, teret, hátteret értek a dolgozatom során. A színtér
+magába foglalja az abban elhelyezett elemek, színek, textúrák és effektek összeségét. Ez lényegében
+bármi lehet. Egy videójátékban vagy animációban akármit fel lehet használni, mint színtér.\\
+Gondoljunk bele, hogy egy szájvizet reklámozó animációs filmben mit láthatunk a képernyőn. El lehet
+képzelni egy fogászati rendelőt, egy fürdőszobát, de még egy emberi szájat vagy akár egy szimpla
+fogat is. Nyilván az, hogy hol és miként játszódik az adott virtuális világ az nagyban befolyásolja az üzenetet, amit sugall a felhasználók felé.\\
+Még egy ilyen példa a Grounded nevű videójáték. A játék
+története szerint összezsugorodott a játékos és egy hagyományos kertes ház udvarában ébredt. Ezen
+példában a színtér maga az udvar, de a perspektíva speciálisabb, ugyanis a fűszálak akkorák a
+játékoshoz képest, mint a fák az emberekhez képest a valóvilágban.\\
+Az idáig említett példákban a színteret valószínűleg kézzel, fix elem elhelyezésekkel készítették el.
+Ugyan a való világban ezt nem igazán lehet megkönnyíteni, hiszen egy szobát nem lehet kattintásra
+átrendezni, a virtuális világban szerencsére egyszerűbb a helyzet. Ez persze nem jelenti azt, hogy több
+száz, akár ezer elem elhelyezése ne lenne nehéz feladat. Ennek könnyítésére és sokszínűségének
+bővítésére szolgál a színtér procedurális generálása.
+
+\section{Színterek csoportosítása}
+A színtereket többféle szempont alapján tudjuk csoportosítani. Talán a legalapvetőbb szempont, hogy a színtér valódi, vagy csak virtuális. A valódi színterekkel az életünk mindegy egyes másodpercében találkozunk, hiszen a szobánk, az utcák, minden, minket körülvevő környezet egy valódi színtér. Virtuális színterekkel is találkozhatunk nap mint nap. Mikor megnézünk egy filmet, játszunk a telefonunkon, virtuális színterek tömkelege tárul elénk. Ezen esetekben már fel is merül egy újabb csoportosítási szempont: a dimenziók száma.\\
+A környezetünkben már megszoktuk, hogy lényegében minden háromdimenziós. Még egy papírlap is rendelkezik vastagsággal, sőt, extrém példaként egy atom is háromdimenziós. Viszont nem egy valóságtól elrugaszkodó koncepció a kétdimenzió, hiszen sok olyan elem van a világban, aminek vastagságát elhanyagolhatjuk. Ilyen a tábla felszínére krétával rajzolt pálcikaember is, aminek ugyan vastagsága nem nulla, mégis annak vesszük. Ebben az esetben a tábla egy kétdimenziós színtér, a pálcikaemberünk pedig egy kétdimenziós elem rajta.\\
+A virtuális színterek esetében a két és háromdimenziós elemek gyakran keverednek. Jellemző az, hogy a térben mélységében máshol helyezkednek el az elemek, sőt, háromdimenziós elemeket is tartalmazhat, csak szimplán egy síkot látunk a kamerán keresztül. Szokás ezeket a játékokat 2.5 dimenziósnak hívni, mert egyik kategóriába sem esik igazán. \\
+Érdekesség, hogy léteznek próbálkozások a magasabb dimenziós virtuális színterek bemutatására is, főleg játékok terén \#KÉP. Ez az absztrakció már a dolgozatomhoz túl bonyolult, így ezekre csak említésképp hivatkoztam.
+
+\section{Virtuális színterek készítése}
+A készítés nulladik fázisa az, hogy kitaláljuk mi a kontextusa a színtérnek. Maga a
+kontextus meghatározza, hogy milyen módszereket használjunk, illetve, hogy milyen célt kell
+elérnünk. Egy végtelenített játék, vagy egy fél perces animáció színterét valószínűleg máshogyan kell
+eltervezni, illetve a készítés is más módszerekkel fog lezajlani.\\
+Az első fázis a tervezés. Érdemes ilyenkor meghatározni a stílust, a színtér lényegét, a benne szereplő elemek szerepét. Segítheti a munkát, ha már ebben a fázisban elképzeljük, hogy milyen hatást
+szeretnénk kiváltani a felhasználókból. Ezek a készítés során rugalmasan változhatnak, viszont egy
+kiinduló pont mindig jól jön.\\
+Második fázis az elrendezés dizájn, az általános paraméterek meghatározása. Ilyen paraméterek
+például a színtér nagysága, alakja, az elemek sűrűsége stb. Dizájn szempontjából érdemes átfogó
+rajzokat készíteni mind az elemekről, mind magáról az elgondolt végeredményről is.\\
+A harmadik fázisban érdemes elkészíteni az alapokat. Ilyen alap például a talaj, amire később
+építhetünk. Ha egy tájat szeretnénk készíteni, akkor a természeti adottságokat, mint a hegyek, folyók
+nagyságát, körülbelüli helyzetét érdemes ilyenkor nagyjából lefektetni. Egy házban játszódó jelenet
+esetén a szobákat és a ház alaprajzát lehet elkészíteni.\\
+Negyedik fázis az elemek elhelyezése, ez az egyik kulcsfontosságú lépés. Meghatározhatjuk, hogy
+mely komponensek legyenek a fókuszpontban, mit lásson először a felhasználó. Az egyes elemek
+közötti kölcsönhatásokat adhatjuk meg.\\
+Az ötödik fázis a részletek elkészítése. A fények, effektek, alig látható kis részletek elhelyezése. Ebben a fázisban már közel késznek vehető a színtér. Ekkor következhet a tesztelés, a javítás, és
+véglegesítés.\\
+A dolgozatom a harmadik és negyedik lépések automatizálásával foglalkozik.
+
+\section{A procedurális generálásról}
+A generálás elsősorban a változatosságot hivatott elérni. Ilyen megoldásokat alkalmazó területeken
+viszont felmerül egy ezzel ellentmondásban lévő probléma: a generált színterek egysíkúnak tűnik. Ha
+nincs véletlenszerűség beleépítve az algoritmusban, akkor túl kiszámítható, ha túl sok van benne,
+akkor pedig túl kiszámíthatatlan lesz a végeredmény. Még ha meg is találjuk az arany középutat,
+akkor is hiányosnak érezhetünk egyes részeket. \# Kate Compton hivatkozás\\
+Ennek ellenére előnyei is vannak a generálásoknak. Nem feltétlenül kell egy legenerált színteret
+azonnali végeredményként felfogni. A készítés során egyszerűen gyárthatunk prototípusokat, amiket
+később kiegészíthetünk, érdekessé tehetünk sajátkezűleg. Olyan munkakörnyezetben, ahol nincsen
+kifejezetten ember arra, hogy színtereket készítsen, nagyon sokat segíthet, ha számtalan koncepciót
+tudnak pár gombnyomással előállítani.\\
+A procedurális generálás nem egy varázslat, ami adott helyzeteket azonnal megold. Inkább egy
+eszköz, amit megfelelően kell használni. Ha jól kihasználjuk a benne rejlő lehetőségeket, akkor
+minimális idő befektetésével nagy mennyiségű, minőségi tartalmakat készíthetünk.

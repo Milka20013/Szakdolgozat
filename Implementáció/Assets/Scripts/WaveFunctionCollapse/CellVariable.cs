@@ -12,7 +12,6 @@ namespace WFC
     {
         public CellVariable()
         {
-
         }
         public string name;
         public Sprite sprite;

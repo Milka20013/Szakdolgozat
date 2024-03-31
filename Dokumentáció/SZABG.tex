@@ -1,0 +1,151 @@
+\chapter{Algoritmus általános célokra}
+\section{Wave function collapse - Az ötletgazda} \label{WFC-Otlet}
+A "WaveFunctionCollapse" nevű algoritmust először githubra publikálta egy felhasználó \footnote{https://github.com/mxgmn/WaveFunctionCollapse}. Az algoritmus nevét a szerző a "hullámfüggvény összeomlásáról" nevezte el, ami egy kvantummechanikai kifejezés. Magának az algoritmusnak nincs szoros kapcsolata ezzel a jelenséggel, de az ihlet onnan jött.
+\\Az algoritmus eredeti ötlete, hogy egy inputként megadott bitmap pixeljeit felhasználva generálunk egy, az eredetihez lokálisan hasonló általában nagyobb bitmapet. A módszer azonban nem korlátolt csak bitmapekre: egy adott képet is fel lehet fogni egy bitmapként, amit tetszőlegesen darabolhatunk fel, így lényegében bármilyen képre elvégezhetjük a lépéseket. Ez kifejezetten hasznos több területen is. Egy ilyen felhasználási módszer amit a forrás is említ, hogy az algoritmussal csempézni is lehet a teret.
+\\Ezen algoritmus inspirált a sajátos megoldásom elkészítésében. Maga a WFC alapköve az, hogy bármely $NxN$-es blokk a kimenetben fellelhető valamilyen forgatással a bemenetben. Ez a szabály egy elég erős feltétel, illetve magába foglal egyfajta szomszédsági kitételt. A "rejtett" szomszédsági kitétel ihlette az én implementációmat.
+\section{Szomszédság alapú blokk generálás - SZABG}
+Ahhoz hogy a \ref{WFC-Otlet} pontban említett WFC ihlette algoritmus implementációm egyszerűbben hivatkozható legyen, nevezzük SZABG-nek.
+A SZABG eljárás bemenetére csak annyi a kitétel, hogy egy $NxM$-es PNG formátumú kép legyen. Viszont ahhoz, hogy elfogadható kimenetet kaphassunk érdemes az alábbi pontokat szem előtt tartani:
+\begin{itemize}
+    \item A bemenet legyen egy bittérkép, melyben a pixelek szomsédságát adjuk meg. A pixeleket blokkokként kezelhetjük.
+    \item Ha a bemenet nem egy bittérkép, akkor a kép legyen olyan blokkokból készítve, melyek szomszédsága ésszerűen elkészített \textit{(tehát például 16x16 pixelből álló bokor, fa és fű szomszédságának megadása úgy, hogy ezek nem fedik egymást és két blokk között nincs hézag \#KÉP)}.
+    \item Használhatunk üres blokkokat is. Üres egy blokk, ha annak alfa csatornája 0. Ezen blokkok nem számítanak bele a szomszédsági kapcsolatokba, és a kimenetben sem szerepelnek. Szerepük a kapcsolatok kialakításának megkönnyítése \#KÉP.
+    \item Ha két $NxM$-es blokkban pontosan ugyanazok a pixelek találhatóak, egynek vesszük őket. Ekkor az adott blokkhoz tartozó súly számláló értéke növekszik, aminek eredményeképpen a blokk előfordulásának valószínűsége nagyobb lesz a kimenetben.
+    \item A szomszsédságok iránya nem mindegy. Ha egy A blokk csak balról szomszédja egy B blokknak, akkor csak és kizárólag balról érintheti a B blokkot a kimenetben.
+    \item A bemenet beolvasása függ a paraméterezéstől, ezért érdemes összehangolni a kettőt.
+\end{itemize}
+
+\subsection{Állítható paraméterek}
+A SZABG algoritmust futattó program azon paraméterei, melyek a felhasználók által állíthatóak annak futása előtt.
+\subsubsection{Bemeneti / kimeneti paraméterek}
+Ezen paraméterek határozzák meg, hogy az input képen mekkorák a blokkok, illetve, hogy az output kép nagyságga mekkora legyen.
+\begin{table}[H]
+\caption{Bemeneti / kimeneti paraméterek}
+\label{bemeneti-kimeneti-szabg}
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+\hline
+Paraméter & Leírás & Érték típus \\
+ \hline\hline
+ Block Width & Egy blokk szélessége & Pozitív egész szám \\ 
+ \hline
+ Block Height & Egy blokk magassága  & Pozitív egész szám\\ 
+  \hline
+  Image Width & A generált kép szélessége & Pozitív egész szám \\ 
+ \hline
+ Image Height & A generált kép magassága  & Pozitív egész szám\\ 
+  \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\paragrafus{Egyéb paraméterek}
+Ezek a paraméterek különböző részeit állítját az algoritmusnak, nagyban befolyásolva az eredményt.
+
+\begin{enumerate}
+    \item Block Can Neighbor Itself
+    \begin{itemize}
+        \item Logikai érték. Alapértelmezett értéke: hamis.
+        \item Igaz érték esetén globálisan minden blokk bármilyen szomszédja lehet önmagának. A súlyokat és a blokk más blokkokra vett szomszédsági kapcsolatát nem befolyásolja.
+        \item Alternatívaként készíthetünk a bemenetre olyan blokkokat, melyek leírják ezt a szomszédságot. Ezzel kiválasztva, hogy pontosan mely cellák legyenek önmaguk szomszédjai. \#KÉP
+    \end{itemize}
+    \item Wildcard
+    \begin{itemize}
+        \item CellVariable típusú paraméter. Alapértelmezett értéke: null.
+        \item A felhasználó ezt egy vizuális panelen tudja beállítani, ha kevesebb mint 40 különböző blokkot tartalmaz a bemenet.
+        \item Egy "joker" blokként fogható fel a beállított blokk. Lényege, hogy bármilyen blokk bármilyen szomszédja lehet. Ha adtunk neki értéket, akkor az algoritmus garantáltan nem akad el.
+    \end{itemize}
+    \item Block global weight
+    \begin{itemize}
+        \item Pozitív valós szám. Alapértelmezett értéke a bemenet beolvasása során állítódik.
+        \item A felhasználó ezt egy vizuális panelen tudja módosítani minden blokkhoz, ha kevesebb mint 40 különböző blokkot tartalmaz a bemenet.
+        \item A paraméter befolyásolja, hogy egy adott blokk milyen globális súllyal rendelkezzen. Minél nagyobb a blokk súlya, annál inkább valószínű, hogy az input egy adott blokkja ilyen legyen (persze az előfordulás nem csak ettől függ). Lokális súlyokat használva nincs hatása.
+    \end{itemize}
+    \item Cell mode
+    \begin{itemize}
+        \item Logikai érték. Alapértelmezett értéke: hamis.
+        \item Igaz érték esetén a generálás nem ténylegesen egy képet készít, hanem sok kicsit. Pontosabban annyit, amennyi blokkal lefedhető a kívánt kép. Nagyban befolyásolja a program futási idejét, viszont ebben a "cella módban" animálható az algoritmus. Az implementáció során jóval egyszerűbb ezt a módot elkészíteni először.
+        \item Hamis érték esetén egy darab tényleges kép objektum generálódik. Virtuális cellákat használva, minden cella erre az egy képre másolja át a tartalmat. Nem animálható, mert a kép pixeleinek beállítasa gyors, viszont annak megjelenítése lassú. Így a futás végén jelenik meg a már kész kép. Jóval gyorsabb futási eredményt okozhat.
+    \end{itemize}
+    \item{Bias}
+    \begin{itemize}
+        \item Pozitív valós érték. Alapértelmezett értéke a bemenet beolvasása során állítódik.
+        \item Lokális súlyokat használva azt határozza meg, hogy a szomszédos letett cellák mennyire domináns hatással vannak az épp vizsgált cellára nézve. Minél nagyobb az érték, annál inkább lesznek egybefüggő "szigetek" a kimeneten.
+    \end{itemize}
+\end{enumerate}
+
+\paragrafus{Lokális súlyok és Bias leírása}
+A lokális súlyok közvetlenül nem állíthatóak. Csak akkor van hatásuk, ha a "Use local weights" értéke igaz. A bemenet beolvasása közben a program minden blokkra egyesével kialakít egy lokális súly kapcsolatot a szomszédos blokkokkal. Egy kapcsolat a két blokk referenciájából áll, illetve, hogy mekkora ezeknek a súlya. A referenciák, illetve a szomszédsági irány nem releváns. Ha két blokk a bemeneten többször áll egymás mellett, akkor a súly egyel növekszik, új kapcsolat nem jön létre. Minél nagyobb a súlyérték, annál inkább "preferálja" egy blokk azt a szomszédot.\\
+Például, ha egy A-B kapcsolatnak a súlya 10, egy A-C kapcsolatnak a súlya 12, akkor a versenyzési fázis során az A blokk a C blokkot adja vissza, mint preferált érték.\\
+A versenyeztetési fázis a cellák lerakásakor indul. Lépései:
+\begin{enumerate}
+    \item \label{lokalis1} A környező cellák először leszűrik, hogy milyen cella kerülhet melléjük.
+    \item  A leszűrt cellák visszakerülnek egy ellenőrzésre minden környező cellához, ahol egyenként kiválasztják, hogy melyik cellát preferálják (feltéve, hogy van olyan). Ha több cellát is preferált, akkor véletlenszerűen választódik egy.
+    \item A preferált cellák visszakerülnek a \ref{lokalis1} pontban készített listába. Így azok a cellák amelyek preferáltak, többször szerepelnek a listában, mint azok, amelyek nem.
+    \item A cellákat csoportosítjuk az előfordulások számának függvényében, új súlyokat létrehozva ezzel. A legnagyobb súlyú celláknak megszorozzuk a súlyát a Bias paraméter értékével.
+    \item Az így keletkezett opciókból a súlyokat figyelembe véve véletlenszerűen választunk (a nagyobb súlyú celláknak nagyobb esélye van a kiválasztásra).
+\end{enumerate}
+A versenyeztetés során az opciók száma nem csökken, illetve a választási valószínűségük sem lesz 0. Ez garantálja azt, hogy változatos lesz a végeredmény, még viszonylag magas Bias érték mellett is.
+
+
+
+\begin{table}[htbp]
+\caption{Egyéb paraméterek összefoglalása}
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+\hline
+Paraméter & Leírás & Érték típus \\
+ \hline\hline
+  \makecell{Block Can \\ Neighbor Itself} & \makecell{Ha igaz, akkor minden blokk 
+ \\szomszédja önmagának minden irányból} & Logikai érték \\
+ \hline
+ Wildcard &\makecell{ Olyan blokk, ami bármilyen blokk \\ bármilyen szomszédja lehet} & CellVariable \\ 
+ \hline
+ Block global weight & Egy blokk globális súlya  & Pozitív valós szám\\ 
+  \hline
+  Animate & \makecell{A generálás animálódjon-e \\ (csak cella módban!)} & Logikai érték \\
+ \hline
+  Cell mode & Cella mód ki/be kapcsolása. & Logikai érték \\
+ \hline
+  Use Local weights & \makecell{Lokális vagy globális súlyokat \\ használjon-e az algoritmus.} & Logikai érték \\
+ \hline
+ Bias & \makecell{Lokális súlyok esetén mennyire legyen \\ domináns a letett cellák befolyása. \\ } & Pozitív valós érték \\
+ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+\subsection{Az algoritmus lépései}
+A paraméterek áttekintése után, vessünk egy pillantást a lépésekre. Önmagában nem feltétlenül tűnik bonyolultnak az eljárás elképzelése: olvassunk be blokkokat, majd tegyük le őket kvázi véletlenül. Ennél azért bonyolultabb a tényleges működés, hiszen szomszédsági kapcsolatokat kell kialakítanunk. Ez növeli a komplexitást, illetve elválasztja a teljesen véletlen generálástól a SZABG-t.
+\begin{enumerate}
+    \item Beolvassuk az inputot.
+    \item Elkészítjuk az input alapján a blokkokat, a \ref{bemeneti-kimeneti-szabg} paramétereknek megfelelően. A blokkokhoz globális és szükségszerűen lokális súlyokat számítunk.
+    \item Minden blokkhoz hozzárendeljük a pozícióját, illetve meghatározzuk, mely blokkok szomszédosak egymással.\\
+    A szomszédokat az alábbiként definiáljuk:
+    \begin{itemize}
+        \item Ha egy blokk koordinátái: $(x,y)$, akkor szomszédjainak koordinátái: \\
+        $(x-1,y), (x+1,y), (x,y-1),(x,y+1)$
+        \item A blokkokat egy tóruszon képzeljük el. Ez azt jelenti, hogy ha összesen $NXK$ blokk van, akkor az $(1,j), (j = 1,2,3...k)$ koordinátájú blokkok bal szomszédja az $(n,j), (j = 1,2,3...k)$ koordinátákon helyezkednek el. Ez a kapcsolat minden szélső blokkra hasonlóan igaz.
+    \end{itemize}
+    \item Lefedjük az output képet üres \textit{cellákkal}, amik egy-egy blokkot fognak megjeleníteni.
+    \item Kiválasztjuk, hogy melyik üres cellát szeretnénk feltölteni. Ez a kiválasztás az alábbi eljárások egyikével történik:
+    \begin{itemize}
+    \label{item:modszer}
+        \item Horizontálisan / vertikálisan, azaz elindulunk egy soron / oszlopon és folytonosan választjuk a cellákat.
+        \item Véletlenszerűen.
+        \item Kiszámítjuk minden cella \textit{entrópiáját}, majd mindig a legalacsonyabb entrópiájú cellát választjuk. A \textbf{cella entrópiája} az a mennyiség, amely megadja, hogy mennyire "bonyolult" meghatározni, hogy milyen blokkot fog tartalmazni a cella. Egy cella blokkját annál bonyolultabb meghatározni, minél több közel egyenlő valószínűségű opció közül lehet választani.\\
+        Legyen a cellák halmaza $C$, a cellára letehető blokkok halmaza $B$. Egy $c\in C$ cella entrópiáját az alábbi képlettel számolhatjuk: $$E(c) = \sum_{i=1}^{n}P(b_i) * \log{1/P(b_i)}$$ ahol $n$ a $B$ halmaz elemszáma, $b_i\in B$, $P(b_i)$ pedig az adott blokk \textit{globális elhelyezési valószínűsége}. Egy $b\in B$ blokk \textbf{globális elhelyezési valószínűsége:} $$P(b) = \frac{S_b}{S_B}$$\\
+        Ahol $S_b$ a $b$ blokk globális súlya, $S_B$ pedig az összes, a cellára letehető blokk globális súlyának összege.
+    \end{itemize}
+    \item Addig ismételjük a 3. ponttól az algoritmust, míg le nem fedtuk az outputot, vagy el nem akadtunk.\\
+    Az elakadás egy probléma ami akkor jelenik meg, ha olyan üres cellához érünk, melynek szomszédjai kizárják egymást. Ekkor az algoritmust újrakezdjük, vagy leállunk. Egy ilyen elakadási helyzetre példa a \#KÉP ábra.\\
+    Elakadás nem lehetséges, ha van olyan blokk, amely bármilyen másik blokk szomszédja lehet.
+\end{enumerate}
+
+\newpage
+
+\subsection{Felhasználás}
+Az algoritmus első ránézésre csak textúrákat képes generálni, viszont ez nem feltétlenül igaz. Képzeljünk el egy bemenetet, ahol háromféle blokk van: barna, zöld, sárga. Ezek a blokkokat később felfoghatjuk földként, fűként és virággként. Ha egy megfelelő inputot megadunk a programnak, legenerálhatjuk egy mező felülnézeti térképét. A letett blokkok színét és helyzetét felhasználva ebből egy háromdimenziós színteret is előállíthatunk.\\
+Egy kétdimenziós színtér esetén a generálás már-már kész eredményt is adhat. Nem szabad elsiklani afölött a tény fölött, hogy a színtér készítése az eljárás végével nem kell, hogy megálljon. Az eredményt tetszőleges módon lehet exportálni és importálni, a felhasználás során az adatokat átrendezhetjük.
