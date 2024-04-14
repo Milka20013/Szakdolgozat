@@ -29,6 +29,14 @@ namespace ProjectCore
             Application.Quit();
         }
 
+        public void SetSeed(string text)
+        {
+            if (int.TryParse(text, out int result))
+            {
+                ProjectManager.SetSeed(result);
+                Random.InitState(result);
+            }
+        }
         public void Back()
         {
             menu.SetActive(false);

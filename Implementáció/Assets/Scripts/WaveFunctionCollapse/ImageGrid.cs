@@ -486,6 +486,7 @@ namespace WFC
             if (Input.GetKeyDown(KeyCode.E))
             {
                 ExportAsTxt();
+                ExportImage();
             }
             if (Input.GetKeyDown(KeyCode.A))
             {

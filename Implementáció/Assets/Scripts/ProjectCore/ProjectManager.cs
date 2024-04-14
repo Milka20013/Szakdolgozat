@@ -1,8 +1,6 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
 namespace ProjectCore
 {
     /// <summary>
@@ -10,6 +8,11 @@ namespace ProjectCore
     /// </summary>
     public static class ProjectManager
     {
+        public static System.Random rnd = new(500);
+        public static void SetSeed(int seed)
+        {
+            rnd = new System.Random(seed);
+        }
         public static T RandomElement<T>(IEnumerable<T> collection, out int index)
         {
             System.Random rnd = new();
