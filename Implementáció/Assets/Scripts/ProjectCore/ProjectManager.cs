@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,7 +28,7 @@ namespace ProjectCore
         }
         public static T RandomElementWeighted<T>(IEnumerable<T> collection) where T : IWeighted
         {
-            float number = Random.Range(0, collection.Sum(x => x.GetWeight()));
+            float number = UnityEngine.Random.Range(0, collection.Sum(x => x.GetWeight()));
             foreach (var item in collection)
             {
                 number -= item.GetWeight();
@@ -40,7 +41,7 @@ namespace ProjectCore
         }
         public static T RandomElementWeighted<T>(IEnumerable<T> collection, IEnumerable<float> weights)
         {
-            float number = Random.Range(0, weights.Sum());
+            float number = UnityEngine.Random.Range(0, weights.Sum());
             for (int i = 0; i < collection.Count(); i++)
             {
                 number -= weights.ElementAt(i);
@@ -61,6 +62,34 @@ namespace ProjectCore
                 int k = rng.Next(n + 1);
                 (array[n], array[k]) = (array[k], array[n]);
             }
+        }
+        public static Vector2Int[] GetNeighborPositionsOfPoint(Vector2Int position, int width, int height)
+        {
+            Vector2Int[] positions = new Vector2Int[4];
+            positions[0] = new(Mod(position.x - 1, width), position.y);
+            positions[1] = new(Mod(position.x + 1, width), position.y);
+            positions[2] = new(position.x, Mod(position.y - 1, height));
+            positions[3] = new(position.x, Mod(position.y + 1, height));
+            return positions;
+        }
+        public static KeyValuePair<T1, T2> MinInDictionaryRandom<T1, T2>(Dictionary<T1, T2> dict) where T2 : IComparable
+        {
+            int firstValue = rnd.Next(0, dict.Count);
+            T1[] keys = dict.Keys.ToArray();
+            KeyValuePair<T1, T2> minPair = new(keys[firstValue], dict[keys[firstValue]]);
+
+            for (int i = firstValue; i < firstValue + keys.Length; i++)
+            {
+                T1 key = keys[i % dict.Count];
+                T2 value = dict[key];
+
+                if (value.CompareTo(minPair.Value) < 0)
+                {
+                    minPair = new KeyValuePair<T1, T2>(key, value);
+                }
+            }
+
+            return minPair;
         }
         public static int Mod(int a, int b)
         {

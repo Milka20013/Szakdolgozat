@@ -6090,7 +6090,7 @@ GameObject:
   - component: {fileID: 1350220702}
   - component: {fileID: 1350220704}
   - component: {fileID: 1350220703}
-  m_Layer: 14
+  m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7070,6 +7070,13 @@ MonoBehaviour:
   pointPrefab: {fileID: 1231939240254982148, guid: 2ca9c60ee8fff2b44813ad174423fb2c, type: 3}
   holePrefab: {fileID: 8318773246942564248, guid: fba3c31cddd38a94ea1735ce06fd29b1, type: 3}
   resourcePrefab: {fileID: 2067445343013130417, guid: e7355a119e7a9f64289f0c68643a1e73, type: 3}
+  numberOfShips: 2
+  ship: {fileID: 3251064413384451836, guid: 613921abd79cfa846aecaa7f97cb8302, type: 3}
+  shipColors:
+  - {r: 0.0073928833, g: 0, b: 1, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0.07073355, a: 1}
+  - {r: 0.91540945, g: 1, b: 0, a: 1}
 --- !u!4 &1688215561
 Transform:
   m_ObjectHideFlags: 0

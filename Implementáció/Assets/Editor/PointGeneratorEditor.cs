@@ -17,6 +17,10 @@ namespace GC
             {
                 gen.GeneratePseudoRandomPoints();
             }
+            if (GUILayout.Button("Count"))
+            {
+                gen.CountObjects();
+            }
         }
     }
 }

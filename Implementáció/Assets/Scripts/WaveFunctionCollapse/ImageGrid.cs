@@ -1,5 +1,6 @@
 using ProjectCore;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace WFC
     }
     public enum PickModel
     {
-        VERTICAL, HORIZONTAL, SHANNON_ENTROPY, RANDOM
+        VERTICAL, HORIZONTAL, SHANNON_ENTROPY, SHANNON_OPTIMIZED, RANDOM
     }
     /// <summary>
     /// The generator of the WFC algorithm
@@ -27,7 +28,7 @@ namespace WFC
         public Image imagePrefab;
         public string outputPath = "output";
         public Canvas canvas;
-        public int maxIterations = 5;
+        public int maxIterations = 100;
         public PickModel pickModel;
         public bool animate;
         public bool cellMode;
@@ -222,6 +223,13 @@ namespace WFC
             {
                 return;
             }
+            System.Diagnostics.Stopwatch stp = new();
+            stp.Start();
+            onAlgorithmEnd.AddListener(() =>
+            {
+                stp.Stop();
+                print(stp.ElapsedMilliseconds);
+            });
             switch (pickModel)
             {
                 case PickModel.VERTICAL:
@@ -232,6 +240,9 @@ namespace WFC
                     break;
                 case PickModel.SHANNON_ENTROPY:
                     StartCoroutine(nameof(ShannonModel));
+                    break;
+                case PickModel.SHANNON_OPTIMIZED:
+                    StartCoroutine(nameof(ShannonModelOptimized));
                     break;
                 case PickModel.RANDOM:
                     StartCoroutine(nameof(RandomModel));
@@ -345,6 +356,75 @@ namespace WFC
                     }
                 }
             }
+            onAlgorithmEnd.Invoke();
+        }
+
+        IEnumerator ShannonModelOptimized()
+        {
+            float initialEntropy = cells[0, 0].Entropy();
+            Dictionary<(int, int), float> unCheckedEntropies = new();
+            for (int i = 0; i < dimension.x; i++)
+            {
+                for (int j = 0; j < dimension.y; j++)
+                {
+                    unCheckedEntropies.Add((i, j), initialEntropy);
+                }
+            }
+            Dictionary<(int, int), float> checkedEntropies = new();
+            float entropy;
+            KeyValuePair<(int, int), float> min;
+            int collapsedCellCount = 0;
+            int targetCellCount = dimension.x * dimension.y;
+            while (collapsedCellCount < targetCellCount)
+            {
+                if (checkedEntropies.Count > 0)
+                {
+                    min = ProjectManager.MinInDictionaryRandom(checkedEntropies);
+                    if (CollapseCell(min.Key.Item1, min.Key.Item2) == null)
+                    {
+                        onAlgorithmEnd.Invoke();
+                        Clear();
+                        yield break;
+                    }
+                    checkedEntropies.Remove(min.Key);
+                }
+                else
+                {
+                    min = ProjectManager.MinInDictionaryRandom(unCheckedEntropies);
+                    if (CollapseCell(min.Key.Item1, min.Key.Item2) == null)
+                    {
+                        onAlgorithmEnd.Invoke();
+                        Clear();
+                        yield break;
+                    }
+                    unCheckedEntropies.Remove(min.Key);
+                }
+                var positions = ProjectManager.GetNeighborPositionsOfPoint(new(min.Key.Item1, min.Key.Item2), dimension.x, dimension.y);
+                for (int k = 0; k < positions.Length; k++)
+                {
+                    int x = positions[k].x;
+                    int y = positions[k].y;
+                    entropy = cells[x, y].Entropy();
+                    if (entropy == float.PositiveInfinity)
+                    {
+                        continue;
+                    }
+                    if (unCheckedEntropies.ContainsKey((x, y)))
+                    {
+                        unCheckedEntropies.Remove((x, y));
+                    }
+                    if (!checkedEntropies.TryAdd((x, y), entropy))
+                    {
+                        checkedEntropies[(x, y)] = entropy;
+                    }
+                }
+                if (animate)
+                {
+                    yield return null;
+                }
+                collapsedCellCount++;
+            }
+            Debug.Log(checkedEntropies.Count);
             onAlgorithmEnd.Invoke();
 
         }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8670474607714334514}
   - component: {fileID: 3860988438965862964}
   - component: {fileID: 572140510986839016}
+  - component: {fileID: -5648265281627757311}
   m_Layer: 0
   m_Name: Relic
   m_TagString: Untagged
@@ -98,3 +99,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 37f5515fe6c83834aaf5eaf73f859eb8, type: 2}
+--- !u!114 &-5648265281627757311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3145075752671657993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ea9fa6d176e2f4daf00e4efff5889b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -61,7 +61,6 @@ namespace WFC
         {
             collapseData.SetNeighbour(side, cellVariable);
         }
-
         public virtual void Reset(Sprite sprite)
         {
             //image.sprite = sprite;

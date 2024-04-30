@@ -23,6 +23,11 @@ namespace GC
         [SerializeField] private GameObject pointPrefab;
         [SerializeField] private GameObject holePrefab;
         [SerializeField] private GameObject resourcePrefab;
+        private List<Relic> relics = new();
+
+        [SerializeField] private int numberOfShips = 2;
+        [SerializeField] private GameObject ship;
+        [SerializeField] Color[] shipColors;
 
         private List<GameObject> generatedObjects = new();
         private void Awake()
@@ -196,6 +201,7 @@ namespace GC
         {
             RunAlgorithm();
             InstantiatePoints();
+            SpawnShips();
         }
         /// <summary>
         /// Run the algorithm normally
@@ -233,8 +239,23 @@ namespace GC
                 }
                 var pos = new Vector3(transform.position.x + item.position.x, transform.position.y + item.position.y);
                 var instance = Instantiate(prefab, pos, Quaternion.identity);
+                if (instance.TryGetComponent(out Relic relic))
+                {
+                    relics.Add(relic);
+                }
                 generatedObjects.Add(instance);
                 instance.GetComponent<CelestialBody>().Init(item, new(dimension.x, dimension.y), spacing);
+            }
+        }
+
+        private void SpawnShips()
+        {
+            for (int i = 0; i < numberOfShips; i++)
+            {
+                var obj = Instantiate(ship, new(0, 0, 0), Quaternion.identity);
+                var scr = obj.GetComponent<Spaceship>();
+                scr.color = shipColors[i];
+                scr.relics = relics;
             }
         }
         /// <summary>
@@ -257,6 +278,23 @@ namespace GC
                 generatedObjects[i] = null;
             }
             generatedObjects.RemoveAll(x => x == null);
+        }
+
+        public void CountObjects()
+        {
+            Dictionary<PointType, int> typesCount = new();
+            foreach (var point in points)
+            {
+                if (!typesCount.TryAdd(point.type, 1))
+                {
+                    typesCount[point.type] = typesCount[point.type] + 1;
+                }
+            }
+
+            foreach (var point in typesCount)
+            {
+                Debug.Log(point.Key + "  " + point.Value);
+            }
         }
     }
 }

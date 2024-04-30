@@ -1604,6 +1604,7 @@ GameObject:
   - component: {fileID: 412663976}
   - component: {fileID: 412663975}
   - component: {fileID: 412663977}
+  - component: {fileID: 412663978}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -1664,6 +1665,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bias: 1
+--- !u!114 &412663978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412663974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8ef5b4b8a066614c8fe961bf6e401fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outputPath: output
 --- !u!1 &451134072
 GameObject:
   m_ObjectHideFlags: 0
@@ -7043,7 +7057,7 @@ MonoBehaviour:
   imagePrefab: {fileID: 745914989869690715, guid: 15b9b400f6f4e174e91b56da75aa4ef0, type: 3}
   outputPath: output
   canvas: {fileID: 568169815}
-  maxIterations: 20
+  maxIterations: 100
   pickModel: 1
   animate: 0
   cellMode: 0
