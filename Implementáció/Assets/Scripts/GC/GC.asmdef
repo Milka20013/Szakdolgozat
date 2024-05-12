@@ -2,7 +2,8 @@
     "name": "GC",
     "rootNamespace": "GC",
     "references": [
-        "ProjectCore"
+        "ProjectCore",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

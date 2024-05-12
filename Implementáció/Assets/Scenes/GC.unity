@@ -6130,7 +6130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
+  m_Color: {r: 0.31132078, g: 0.31132078, b: 0.31132078, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7065,8 +7065,8 @@ MonoBehaviour:
   dimension: {x: 16, y: 9}
   spacing: 3
   positionNoise: 0.5
-  planetDensity: 0
-  maxPlanetsPerStar: 0
+  planetDensity: 0.2
+  maxPlanetsPerStar: 3
   pointPrefab: {fileID: 1231939240254982148, guid: 2ca9c60ee8fff2b44813ad174423fb2c, type: 3}
   holePrefab: {fileID: 8318773246942564248, guid: fba3c31cddd38a94ea1735ce06fd29b1, type: 3}
   resourcePrefab: {fileID: 2067445343013130417, guid: e7355a119e7a9f64289f0c68643a1e73, type: 3}
@@ -7077,6 +7077,7 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 0, g: 1, b: 0.07073355, a: 1}
   - {r: 0.91540945, g: 1, b: 0, a: 1}
+  targetRelicCount: 20
 --- !u!4 &1688215561
 Transform:
   m_ObjectHideFlags: 0
@@ -7818,7 +7819,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2028664870
 RectTransform:
   m_ObjectHideFlags: 0

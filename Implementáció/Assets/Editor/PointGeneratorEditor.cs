@@ -21,6 +21,14 @@ namespace GC
             {
                 gen.CountObjects();
             }
+            if (GUILayout.Button("Spawn ships"))
+            {
+                gen.SpawnShips();
+            }
+            if (GUILayout.Button("Refresh ships"))
+            {
+                gen.RefreshShips();
+            }
         }
     }
 }

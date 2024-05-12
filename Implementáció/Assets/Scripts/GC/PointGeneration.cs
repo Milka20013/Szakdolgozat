@@ -30,9 +30,35 @@ namespace GC
         [SerializeField] Color[] shipColors;
 
         private List<GameObject> generatedObjects = new();
+        private List<Spaceship> ships = new();
+        public int targetRelicCount = 20;
         private void Awake()
         {
             instance = this;
+        }
+
+        private void Update()
+        {
+            int count = 0;
+            foreach (var item in ships)
+            {
+                count += item.relicCount;
+            }
+            if (count >= targetRelicCount)
+            {
+                foreach (var item in ships)
+                {
+                    item.stop = true;
+                }
+            }
+        }
+
+        public void RefreshShips()
+        {
+            foreach (var item in ships)
+            {
+                item.stop = false;
+            }
         }
         /// <summary>
         /// Run the generation
@@ -56,6 +82,7 @@ namespace GC
 
             GenerateResources();
         }
+
         /// <summary>
         /// Generate maxNumberOfStars amount of stars randomly in a grid given by the dimension variable.
         /// </summary>
@@ -201,7 +228,7 @@ namespace GC
         {
             RunAlgorithm();
             InstantiatePoints();
-            SpawnShips();
+            //SpawnShips();
         }
         /// <summary>
         /// Run the algorithm normally
@@ -248,7 +275,7 @@ namespace GC
             }
         }
 
-        private void SpawnShips()
+        public void SpawnShips()
         {
             for (int i = 0; i < numberOfShips; i++)
             {
@@ -256,6 +283,7 @@ namespace GC
                 var scr = obj.GetComponent<Spaceship>();
                 scr.color = shipColors[i];
                 scr.relics = relics;
+                ships.Add(scr);
             }
         }
         /// <summary>

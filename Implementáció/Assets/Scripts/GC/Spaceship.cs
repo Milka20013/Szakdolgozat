@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace GC
@@ -12,6 +13,8 @@ namespace GC
         [SerializeField] private float speed = 20;
         [SerializeField] private LineRenderer line;
         public Color color;
+        public TextMeshProUGUI text;
+        public bool stop;
         private void Start()
         {
             FindClosestRelic();
@@ -19,10 +22,15 @@ namespace GC
             line.SetPosition(0, transform.position);
             line.material.color = color;
             GetComponent<SpriteRenderer>().material.color = color;
+            text.text = relicCount.ToString();
         }
         private void Update()
         {
             if (target == null)
+            {
+                return;
+            }
+            if (stop)
             {
                 return;
             }
@@ -42,6 +50,7 @@ namespace GC
             line.positionCount++;
             relicCount++;
             line.SetPosition(relicCount, transform.position);
+            text.text = relicCount.ToString();
         }
         private void MoveTowardsTarget()
         {
